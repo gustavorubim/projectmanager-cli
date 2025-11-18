@@ -22,7 +22,7 @@ from langchain_core.messages import HumanMessage
 
 from .agent import create_agent, run_agent
 from .tools import load_plan, ensure_project_files, get_project_root
-from .viz import generate_gantt
+from .viz import generate_gantt, render_text_gantt
 
 app = typer.Typer(help="CLI Project Manager Agent", invoke_without_command=True)
 console = Console()
@@ -41,8 +41,8 @@ def show_help():
     console.print("  /status --week       Get AI weekly summary")
     console.print("  /plan                View the plan JSON")
     console.print("  /plan --edit         Edit plan in editor")
-    console.print("  /gantt               Generate Gantt chart")
-    console.print("  /gantt --open        Generate and open chart")
+    console.print("  /gantt               Display Gantt chart in CLI + save PNG")
+    console.print("  /gantt --open        Display chart + save PNG + open file")
     console.print("  /followup <task>     Quick add task")
     console.print("    [dim]Example: /followup \"Fix bug\" --due 2025-12-01 --assign john[/dim]")
     console.print("  /new <project>       Create new project")
@@ -140,13 +140,16 @@ def handle_gantt_command(args: list):
     """Handle /gantt command."""
     open_file = "--open" in args
 
-    console.print("[cyan]Generating Gantt chart...[/cyan]")
-
     try:
+        # First, display text-based Gantt chart in CLI
+        render_text_gantt(console)
+
+        # Then generate PNG file
+        console.print("[cyan]Generating PNG Gantt chart...[/cyan]")
         generate_gantt()
         gantt_path = get_project_root() / "gantt_latest.png"
 
-        console.print(f"[green]OK[/green] Gantt chart saved to {gantt_path}")
+        console.print(f"[green]OK[/green] Gantt chart saved to {gantt_path}\n")
 
         if open_file:
             # Open in default image viewer

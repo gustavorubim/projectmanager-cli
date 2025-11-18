@@ -112,3 +112,103 @@ def generate_gantt():
     plt.close()
 
     print(f"Gantt chart saved to {output_path}")
+
+
+def render_text_gantt(console: Console = None):
+    """Render a text-based Gantt chart in the terminal using Rich."""
+    if console is None:
+        console = Console()
+
+    plan = load_plan()
+
+    if not plan.tasks:
+        console.print("[yellow]No tasks in plan to display[/yellow]")
+        return
+
+    # Calculate date range
+    all_dates = []
+    for task in plan.tasks:
+        start = task.start_date or date.today()
+        due = task.due_date or (start + timedelta(days=1))
+        all_dates.extend([start, due])
+
+    min_date = min(all_dates)
+    max_date = max(all_dates)
+    total_days = (max_date - min_date).days + 1
+
+    # Create timeline header
+    table = Table(title="Project Gantt Chart (Timeline View)", show_header=True, header_style="bold cyan")
+
+    # Add columns
+    table.add_column("ID", style="cyan", width=4, no_wrap=True)
+    table.add_column("Task", style="white", width=30, no_wrap=False)
+    table.add_column("Status", style="magenta", width=12)
+    table.add_column("Timeline", style="white", width=max(40, min(80, total_days)), no_wrap=True)
+    table.add_column("Duration", style="yellow", width=10)
+
+    # Status colors and symbols
+    status_styles = {
+        'todo': ('[ ]', 'dim white'),
+        'in_progress': ('[>]', 'blue'),
+        'done': ('[X]', 'green'),
+        'blocked': ('[!]', 'red')
+    }
+
+    # Render each task
+    for task in plan.tasks:
+        start = task.start_date or date.today()
+        due = task.due_date or (start + timedelta(days=1))
+        duration = (due - start).days + 1
+
+        # Calculate position in timeline
+        days_from_start = (start - min_date).days
+
+        # Create visual timeline bar
+        bar_width = max(40, min(80, total_days))
+        if total_days <= bar_width:
+            # 1:1 scale
+            bar_start = days_from_start
+            bar_length = duration
+        else:
+            # Scaled down
+            scale = bar_width / total_days
+            bar_start = int(days_from_start * scale)
+            bar_length = max(1, int(duration * scale))
+
+        # Build the timeline visualization
+        timeline = [' '] * bar_width
+
+        # Fill in the bar
+        status_char = '=' if task.status == 'done' else '>' if task.status == 'in_progress' else '-' if task.status == 'todo' else '!'
+        for i in range(bar_start, min(bar_start + bar_length, bar_width)):
+            timeline[i] = status_char
+
+        # Color the timeline based on status
+        timeline_str = ''.join(timeline)
+        status_symbol, status_color = status_styles.get(task.status, ('[ ]', 'white'))
+
+        # Format dates
+        date_range = f"{duration}d"
+
+        # Add row
+        table.add_row(
+            str(task.id),
+            task.title[:30],
+            f"{status_symbol} {task.status}",
+            f"[{status_color}]{timeline_str}[/{status_color}]",
+            date_range
+        )
+
+    # Print the table
+    console.print()
+    console.print(table)
+    console.print()
+
+    # Print legend
+    console.print("[bold]Legend:[/bold]")
+    console.print("  [dim white]- - -[/dim white] Todo    [blue]> > >[/blue] In Progress    [green]= = =[/green] Done    [red]! ! ![/red] Blocked")
+    console.print()
+
+    # Print date range
+    console.print(f"[dim]Timeline: {min_date.isoformat()} to {max_date.isoformat()} ({total_days} days)[/dim]")
+    console.print()
