@@ -1,0 +1,45 @@
+# Python artifacts
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+.ruff_cache/
+.mypy_cache/
+.pytest_cache/
+.coverage
+coverage.xml
+
+# Environments
+.env
+.venv/
+venv/
+env/
+
+# Packaging / build
+build/
+dist/
+*.egg-info/
+
+# Checkpoints & logs
+checkpoints/
+*.db
+logs/
+*.log
+
+# Editors / OS
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Credentials & local data
+vertex-sa.json
+credentials/
+*.pem
+*.key
+
+# Test/demo projects created during development
+demo-project/
+test-project/
+_archive/

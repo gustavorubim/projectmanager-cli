@@ -1,0 +1,173 @@
+[
+  {
+    "id": 1,
+    "title": "Project Kickoff Meeting",
+    "assignee": null,
+    "start_date": "2023-11-24",
+    "due_date": "2023-11-24",
+    "status": "todo",
+    "dependencies": []
+  },
+  {
+    "id": 2,
+    "title": "Define Project Objectives",
+    "assignee": null,
+    "start_date": null,
+    "due_date": "2023-11-30",
+    "status": "todo",
+    "dependencies": []
+  },
+  {
+    "id": 3,
+    "title": "Identify Key Stakeholders",
+    "assignee": null,
+    "start_date": null,
+    "due_date": "2023-11-30",
+    "status": "todo",
+    "dependencies": []
+  },
+  {
+    "id": 4,
+    "title": "Develop Project Scope Statement",
+    "assignee": null,
+    "start_date": null,
+    "due_date": "2023-12-04",
+    "status": "todo",
+    "dependencies": []
+  },
+  {
+    "id": 5,
+    "title": "Create Wireframes and Mockups",
+    "assignee": null,
+    "start_date": null,
+    "due_date": "2023-12-11",
+    "status": "todo",
+    "dependencies": []
+  },
+  {
+    "id": 6,
+    "title": "Design User Interface (UI) and User Experience (UX)",
+    "assignee": null,
+    "start_date": null,
+    "due_date": "2023-12-18",
+    "status": "todo",
+    "dependencies": []
+  },
+  {
+    "id": 7,
+    "title": "Review and Approve Design",
+    "assignee": null,
+    "start_date": null,
+    "due_date": "2023-12-22",
+    "status": "todo",
+    "dependencies": []
+  },
+  {
+    "id": 8,
+    "title": "Set Up Development Environment",
+    "assignee": null,
+    "start_date": null,
+    "due_date": "2024-01-05",
+    "status": "todo",
+    "dependencies": []
+  },
+  {
+    "id": 9,
+    "title": "Develop Core Features",
+    "assignee": null,
+    "start_date": null,
+    "due_date": "2024-02-02",
+    "status": "todo",
+    "dependencies": []
+  },
+  {
+    "id": 10,
+    "title": "Conduct Unit Testing",
+    "assignee": null,
+    "start_date": null,
+    "due_date": "2024-02-09",
+    "status": "todo",
+    "dependencies": []
+  },
+  {
+    "id": 11,
+    "title": "Perform Integration Testing",
+    "assignee": null,
+    "start_date": null,
+    "due_date": "2024-02-16",
+    "status": "todo",
+    "dependencies": []
+  },
+  {
+    "id": 12,
+    "title": "Conduct User Acceptance Testing (UAT)",
+    "assignee": null,
+    "start_date": null,
+    "due_date": "2024-02-23",
+    "status": "todo",
+    "dependencies": []
+  },
+  {
+    "id": 13,
+    "title": "Fix Bugs and Issues",
+    "assignee": null,
+    "start_date": null,
+    "due_date": "2024-03-01",
+    "status": "todo",
+    "dependencies": []
+  },
+  {
+    "id": 14,
+    "title": "Prepare Marketing Materials",
+    "assignee": null,
+    "start_date": null,
+    "due_date": "2024-03-08",
+    "status": "todo",
+    "dependencies": []
+  },
+  {
+    "id": 15,
+    "title": "Launch App on App Stores",
+    "assignee": null,
+    "start_date": null,
+    "due_date": "2024-03-15",
+    "status": "todo",
+    "dependencies": []
+  },
+  {
+    "id": 16,
+    "title": "Monitor Initial Feedback",
+    "assignee": null,
+    "start_date": null,
+    "due_date": "2024-03-22",
+    "status": "todo",
+    "dependencies": []
+  },
+  {
+    "id": 17,
+    "title": "Gather User Feedback",
+    "assignee": null,
+    "start_date": null,
+    "due_date": "2024-03-29",
+    "status": "todo",
+    "dependencies": []
+  },
+  {
+    "id": 18,
+    "title": "Plan for Updates and Improvements",
+    "assignee": null,
+    "start_date": null,
+    "due_date": "2024-04-05",
+    "status": "todo",
+    "dependencies": []
+  },
+  {
+    "id": 19,
+    "title": "Analyze App Performance Metrics",
+    "assignee": null,
+    "start_date": null,
+    "due_date": "2024-04-12",
+    "status": "todo",
+    "dependencies": []
+  }
+]
