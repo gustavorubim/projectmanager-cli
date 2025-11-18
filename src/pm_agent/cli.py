@@ -4,6 +4,7 @@ import os
 import sys
 import json
 import subprocess
+import time
 from pathlib import Path
 from typing import Optional
 from datetime import datetime
@@ -13,6 +14,9 @@ from rich.console import Console
 from rich.table import Table
 from rich.markdown import Markdown
 from rich.panel import Panel
+from rich.live import Live
+from rich.text import Text
+from rich.align import Align
 from rich import print as rprint
 from langchain_core.messages import HumanMessage
 
@@ -292,8 +296,54 @@ def parse_slash_command(user_input: str):
     return True
 
 
+def show_startup_animation():
+    """Display a cool startup animation."""
+    # ASCII art that works on all platforms
+    frames = [
+        # Frame 1: Just dots
+        r"""
+        . . . . . .
+        """,
+        # Frame 2: Building
+        r"""
+        ___  __  __
+        |__) |  \/  |
+        """,
+        # Frame 3: Complete
+        r"""
+        ___  __  __      _   ___ ___ _  _ _____
+        |__) |  \/  |    /_\ / __| __| \| |_   _|
+        |    |  |  |    / _ \ (_ | _|| .` | | |
+        """,
+        # Frame 4: With tagline
+        r"""
+        ___  __  __      _   ___ ___ _  _ _____
+        |__) |  \/  |    /_\ / __| __| \| |_   _|
+        |    |  |  |    / _ \ (_ | _|| .` | | |
+
+             AI-Powered Project Manager
+        """,
+    ]
+
+    colors = ["dim cyan", "cyan", "bright_cyan", "bold bright_cyan"]
+
+    with Live(console=console, refresh_per_second=20, transient=True) as live:
+        # Show building animation
+        for i, frame in enumerate(frames):
+            text = Text(frame, style=colors[i])
+            centered = Align.center(text)
+            live.update(centered)
+            time.sleep(0.25)
+
+        # Hold final frame
+        time.sleep(0.3)
+
+
 def start_repl(project: Optional[str] = None):
     """Start the main REPL interface."""
+    # Show startup animation
+    show_startup_animation()
+
     # Change to project directory if specified
     if project:
         if not Path(project).exists():

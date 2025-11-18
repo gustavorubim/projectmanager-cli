@@ -29,7 +29,7 @@ cp .env.example .env  # Then add your OPENAI_API_KEY
 # Start using
 pm new my-project
 cd my-project
-pm chat
+pm                    # Enter interactive mode
 ```
 
 ## Installation
@@ -122,57 +122,70 @@ my-project/
 └── .pm/                        # Agent memory (SQLite)
 ```
 
-### 2. Chat with the agent
-```bash
-pm chat
-```
+### 2. Inside PM Agent REPL
 
-Example conversation:
+Once inside (after running `pm`), you can:
+
+**Chat with the AI** (just type naturally):
 ```
-You: Let's plan a website redesign. We need to finish by end of month.
+> Let's plan a website redesign. We need to finish by end of month.
+
 Agent: I'll help you plan this. Let me create some initial tasks...
 ```
 
-### 3. View project status
-```bash
-pm status
+**Use slash commands**:
+```
+> /status              # View task table
+> /plan                # View the plan JSON
+> /plan --edit         # Edit in your editor
+> /gantt --open        # Generate and open Gantt chart
+> /help                # Show all commands
+> /exit                # Exit
 ```
 
-Shows a table of all tasks with their status, assignee, and due dates.
+### 3. Alternative: Direct Commands
 
-### 4. View/Edit the plan
+You can also run commands directly without entering the REPL:
 ```bash
-pm plan              # View the plan JSON
-pm plan --edit       # Edit in your default editor
-```
-
-### 5. Generate Gantt chart
-```bash
-pm gantt             # Generate chart
-pm gantt --open      # Generate and open in viewer
+pm status        # Quick status check
+pm gantt --open  # Generate and view chart
+pm new my-project  # Create new project
 ```
 
 ## Commands Reference
 
-### Project Management
+### Interactive Mode (Recommended)
+```bash
+pm                    # Enter REPL (interactive mode)
+pm mobile-app-launch  # Enter REPL in specific project
+```
+
+**Inside the REPL:**
+- Just type naturally to chat with AI
+- `/status` - Show task table
+- `/status --week` - Get AI weekly summary
+- `/plan` - View the plan JSON
+- `/plan --edit` - Edit plan in editor
+- `/gantt` - Generate Gantt chart
+- `/gantt --open` - Generate and open chart
+- `/followup "task"` - Quick task add
+  - Example: `/followup "Fix bug" --due 2025-12-01 --assign john`
+- `/new <name>` - Create new project
+- `/archive` - Archive current project
+- `/help` - Show all commands
+- `/exit` - Exit REPL
+
+### Direct Commands (Alternative)
+For quick one-off commands without entering the REPL:
 - `pm new <name>` - Create a new project
 - `pm status` - Show task table
-- `pm status --week` - Get AI-generated weekly summary
+- `pm status --week` - Get AI weekly summary
 - `pm plan` - View the plan JSON
-- `pm plan --edit` - Edit plan in editor (auto-updates Gantt)
-
-### Agent Interaction
-- `pm chat` - Start interactive chat (default: current project)
-- `pm chat <project>` - Chat about a specific project
-- `pm chat --thread <name>` - Use a separate conversation thread
-- `pm followup "task" --due 2025-12-01 --assign john` - Quick task add
-
-### Visualization
+- `pm plan --edit` - Edit plan in editor
 - `pm gantt` - Generate Gantt chart
 - `pm gantt --open` - Generate and open chart
-
-### Utilities
-- `pm archive` - Archive the current project to `_archive/`
+- `pm followup "task" --due DATE --assign NAME` - Quick task add
+- `pm archive` - Archive the current project
 
 ## Project File Structure
 
@@ -199,16 +212,31 @@ Status values: `todo`, `in_progress`, `done`, `blocked`
 
 ## Advanced Usage
 
-### Multiple Conversation Threads
-```bash
-pm chat --thread backlog    # Separate brainstorming context
-pm chat --thread planning   # Planning discussions
-pm chat                     # Main project thread
+### Using the Interactive REPL
+The REPL provides a seamless experience where you can:
+- Mix natural language chat with slash commands
+- See immediate feedback on changes
+- Access all features without leaving the session
+
+Example session:
+```
+> /new mobile-app
+> Define the project charter with goals and scope
+[Agent helps you draft the charter]
+> Create 5 tasks for the first sprint
+[Agent creates tasks]
+> /status
+[Shows task table]
+> /gantt --open
+[Generates and opens chart]
 ```
 
 ### Weekly Status Reports
+Inside the REPL or as a direct command:
 ```bash
-pm status --week
+pm status --week          # Direct command
+# OR
+> /status --week          # Inside REPL
 ```
 Generates an AI summary of progress, great for stand-ups or reports.
 

@@ -2,10 +2,10 @@
   {
     "id": 1,
     "title": "Project Kickoff Meeting",
-    "assignee": null,
+    "assignee": "Douglas",
     "start_date": "2023-11-24",
     "due_date": "2023-11-24",
-    "status": "todo",
+    "status": "done",
     "dependencies": []
   },
   {
@@ -167,6 +167,15 @@
     "assignee": null,
     "start_date": null,
     "due_date": "2024-04-12",
+    "status": "todo",
+    "dependencies": []
+  },
+  {
+    "id": 20,
+    "title": "API Development",
+    "assignee": null,
+    "start_date": null,
+    "due_date": "2023-12-01",
     "status": "todo",
     "dependencies": []
   }
