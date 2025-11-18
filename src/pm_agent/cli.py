@@ -298,51 +298,53 @@ def parse_slash_command(user_input: str):
 
 def show_startup_animation():
     """Display a cool startup animation."""
-    # ASCII art that works on all platforms
+    # ASCII art frames that build up
     frames = [
-        # Frame 1: Just dots
-        r"""
-        . . . . . .
-        """,
-        # Frame 2: Building
-        r"""
-        ___  __  __
-        |__) |  \/  |
-        """,
-        # Frame 3: Complete
-        r"""
-        ___  __  __      _   ___ ___ _  _ _____
-        |__) |  \/  |    /_\ / __| __| \| |_   _|
-        |    |  |  |    / _ \ (_ | _|| .` | | |
-        """,
-        # Frame 4: With tagline
-        r"""
-        ___  __  __      _   ___ ___ _  _ _____
-        |__) |  \/  |    /_\ / __| __| \| |_   _|
-        |    |  |  |    / _ \ (_ | _|| .` | | |
+        # Frame 1: Initializing
+        (r"""
+        [...............]
+        """, "dim cyan", "Initializing..."),
 
-             AI-Powered Project Manager
-        """,
+        # Frame 2: Loading
+        (r"""
+        [###............]
+        """, "cyan", "Loading agent..."),
+
+        # Frame 3: Almost there
+        (r"""
+        [##########.....]
+        """, "bright_cyan", "Starting up..."),
+
+        # Frame 4: Logo appears
+        (r"""
+        ___  __  __      _   ___ ___ _  _ _____
+        |__) |  \/  |    /_\ / __| __| \| |_   _|
+        |    |  |  |    / _ \ (_ | _|| .` | | |
+        """, "bold bright_cyan", "Ready!"),
     ]
-
-    colors = ["dim cyan", "cyan", "bright_cyan", "bold bright_cyan"]
 
     with Live(console=console, refresh_per_second=20, transient=True) as live:
         # Show building animation
-        for i, frame in enumerate(frames):
-            text = Text(frame, style=colors[i])
+        for frame_text, color, status in frames:
+            # Create main text
+            text = Text()
+            text.append(frame_text, style=color)
+            text.append("\n")
+            text.append(f"        {status}", style=f"dim {color}")
+
             centered = Align.center(text)
             live.update(centered)
-            time.sleep(0.25)
+            time.sleep(0.2)
 
-        # Hold final frame
-        time.sleep(0.3)
+        # Brief pause on final frame
+        time.sleep(0.2)
 
 
 def start_repl(project: Optional[str] = None):
     """Start the main REPL interface."""
-    # Show startup animation
-    show_startup_animation()
+    # Show startup animation (can be disabled with PM_NO_ANIMATION=1)
+    if not os.environ.get("PM_NO_ANIMATION"):
+        show_startup_animation()
 
     # Change to project directory if specified
     if project:

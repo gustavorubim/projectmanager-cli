@@ -34,7 +34,19 @@ cd your-project
 pm
 ```
 
-You'll see:
+First, you'll see a brief startup animation:
+```
+        [##########.....]
+        Starting up...
+
+        ___  __  __      _   ___ ___ _  _ _____
+        |__) |  \/  |    /_\ / __| __| \| |_   _|
+        |    |  |  |    / _ \ (_ | _|| .` | | |
+
+        Ready!
+```
+
+Then the main interface appears:
 ```
 +------------------------------------------------------------+
 | PM Agent - AI-Powered Project Manager                      |
@@ -47,6 +59,8 @@ Current project: your-project
 
 >
 ```
+
+**Note:** The animation can be disabled by setting `PM_NO_ANIMATION=1` in your environment.
 
 ### 2. Use Natural Language (No Slash)
 Just type normally to chat with the AI:

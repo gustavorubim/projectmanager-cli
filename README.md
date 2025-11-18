@@ -251,6 +251,7 @@ The agent can create files in specific directories:
 
 - `OPENAI_API_KEY` - Your OpenAI API key (required)
 - `EDITOR` - Preferred text editor for `pm plan --edit` (default: notepad/nano)
+- `PM_NO_ANIMATION` - Set to `1` to disable startup animation for instant launch
 
 ## Tips
 
