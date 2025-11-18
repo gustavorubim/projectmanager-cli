@@ -6,6 +6,8 @@ import matplotlib.dates as mdates
 from datetime import datetime, timedelta, date
 from pathlib import Path
 import pandas as pd
+from rich.console import Console
+from rich.table import Table
 
 from .tools import load_plan, get_project_root
 

@@ -297,47 +297,110 @@ def parse_slash_command(user_input: str):
 
 
 def show_startup_animation():
-    """Display a cool startup animation."""
-    # ASCII art frames that build up
-    frames = [
-        # Frame 1: Initializing
-        (r"""
-        [...............]
-        """, "dim cyan", "Initializing..."),
+    """Display a cool startup animation with logo and mascot."""
 
-        # Frame 2: Loading
-        (r"""
-        [###............]
-        """, "cyan", "Loading agent..."),
+    # Check if terminal supports Unicode by checking encoding
+    supports_unicode = True
+    if sys.platform == "win32":
+        # Try to enable UTF-8 mode on Windows
+        try:
+            import codecs
+            sys.stdout.reconfigure(encoding='utf-8')
+        except:
+            supports_unicode = False
 
-        # Frame 3: Almost there
-        (r"""
-        [##########.....]
-        """, "bright_cyan", "Starting up..."),
+    if supports_unicode:
+        # Unicode version (prettier)
+        LOGO = """
+   ██████╗ ███╗   ███╗     █████╗  ██████╗ ███████╗███╗   ██╗████████╗  ╔═══════════╗
+   ██╔══██╗████╗ ████║    ██╔══██╗██╔════╝ ██╔════╝████╗  ██║╚══██╔══╝  ║ ✓ Tasks   ║
+   ██████╔╝██╔████╔██║    ███████║██║  ███╗█████╗  ██╔██╗ ██║   ██║     ║ ✓ Plans   ║
+   ██╔═══╝ ██║╚██╔╝██║    ██╔══██║██║   ██║██╔══╝  ██║╚██╗██║   ██║     ║ ○ Goals   ║
+   ██║     ██║ ╚═╝ ██║    ██║  ██║╚██████╔╝███████╗██║ ╚████║   ██║     ╚═══════════╝
+   ╚═╝     ╚═╝     ╚═╝    ╚═╝  ╚═╝ ╚═════╝ ╚══════╝╚═╝  ╚═══╝   ╚═╝         ╚═══╝
+"""
 
-        # Frame 4: Logo appears
-        (r"""
-        ___  __  __      _   ___ ___ _  _ _____
-        |__) |  \/  |    /_\ / __| __| \| |_   _|
-        |    |  |  |    / _ \ (_ | _|| .` | | |
-        """, "bold bright_cyan", "Ready!"),
-    ]
+        MASCOT = """   """
+    else:
+        # ASCII fallback (Windows compatible)
+        LOGO = r"""
+    ____  __  __      _    ____ _____ _   _ _____
+   |  _ \|  \/  |    / \  / ___| ____| \ | |_   _|
+   | |_) | |\/| |   / _ \| |  _|  _| |  \| | | |
+   |  __/| |  | |  / ___ \ |_| | |___| |\  | | |
+   |_|   |_|  |_| /_/   \_\____|_____|_| \_| |_|
+"""
+        MASCOT = """
+        +===========+
+        | [ ] Tasks |
+        | [x] Plans |
+        | [ ] Goals |
+        +===========+
+           |   |
+           +===+
+"""
 
-    with Live(console=console, refresh_per_second=20, transient=True) as live:
-        # Show building animation
-        for frame_text, color, status in frames:
-            # Create main text
-            text = Text()
-            text.append(frame_text, style=color)
-            text.append("\n")
-            text.append(f"        {status}", style=f"dim {color}")
+    TAGLINE = "AI-Powered Project Manager"
 
-            centered = Align.center(text)
-            live.update(centered)
+    try:
+        with Live(console=console, refresh_per_second=20, transient=True) as live:
+            # Frame 1: Dots appear
+            text1 = Text()
+            text1.append("...", style="dim cyan")
+            live.update(Align.center(text1))
+            time.sleep(0.15)
+
+            # Frame 2: More dots
+            text2 = Text()
+            text2.append("......", style="cyan")
+            live.update(Align.center(text2))
+            time.sleep(0.15)
+
+            # Frame 3: Logo fades in
+            text3 = Text()
+            text3.append(LOGO, style="dim cyan")
+            live.update(Align.center(text3))
             time.sleep(0.2)
 
-        # Brief pause on final frame
-        time.sleep(0.2)
+            # Frame 4: Logo brightens
+            text4 = Text()
+            text4.append(LOGO, style="cyan")
+            live.update(Align.center(text4))
+            time.sleep(0.15)
+
+            # Frame 5: Logo full brightness with mascot
+            text5 = Text()
+            text5.append(LOGO, style="bold bright_cyan")
+            text5.append("\n")
+            text5.append(MASCOT, style="magenta")
+            live.update(Align.center(text5))
+            time.sleep(0.2)
+
+            # Frame 6: Add tagline
+            text6 = Text()
+            text6.append(LOGO, style="bold bright_cyan")
+            text6.append("\n")
+            text6.append(MASCOT, style="magenta")
+            text6.append("\n")
+            text6.append(f"        {TAGLINE}", style="bold cyan")
+            live.update(Align.center(text6))
+            time.sleep(0.3)
+
+        # After animation completes, print the final logo persistently
+        final_display = Text()
+        final_display.append(LOGO, style="bold bright_cyan")
+        final_display.append("\n")
+        final_display.append(MASCOT, style="magenta")
+        final_display.append("\n")
+        final_display.append(f"        {TAGLINE}", style="bold cyan")
+        final_display.append("\n")
+        console.print(Align.center(final_display))
+
+    except (UnicodeEncodeError, Exception):
+        # Simple fallback
+        console.print("\n[bold cyan]PM AGENT[/bold cyan]", justify="center")
+        console.print("[dim cyan]AI-Powered Project Manager[/dim cyan]", justify="center")
+        console.print()
 
 
 def start_repl(project: Optional[str] = None):
