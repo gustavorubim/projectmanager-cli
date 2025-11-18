@@ -30,7 +30,7 @@ console = Console()
 
 def show_help():
     """Display help information for slash commands."""
-    console.print("\n[bold cyan]PM Agent Commands[/bold cyan]\n")
+    console.print("\n[bold cyan]Control Tower Commands[/bold cyan]\n")
 
     console.print("[bold]Regular Messages[/bold]")
     console.print("Just type naturally to chat with the AI agent:")
@@ -315,35 +315,43 @@ def show_startup_animation():
     if supports_unicode:
         # Unicode version (prettier)
         LOGO = """
-   ██████╗ ███╗   ███╗     █████╗  ██████╗ ███████╗███╗   ██╗████████╗  ╔═══════════╗
-   ██╔══██╗████╗ ████║    ██╔══██╗██╔════╝ ██╔════╝████╗  ██║╚══██╔══╝  ║ ✓ Tasks   ║
-   ██████╔╝██╔████╔██║    ███████║██║  ███╗█████╗  ██╔██╗ ██║   ██║     ║ ✓ Plans   ║
-   ██╔═══╝ ██║╚██╔╝██║    ██╔══██║██║   ██║██╔══╝  ██║╚██╗██║   ██║     ║ ○ Goals   ║
-   ██║     ██║ ╚═╝ ██║    ██║  ██║╚██████╔╝███████╗██║ ╚████║   ██║     ╚═══════════╝
-   ╚═╝     ╚═╝     ╚═╝    ╚═╝  ╚═╝ ╚═════╝ ╚══════╝╚═╝  ╚═══╝   ╚═╝         ╚═══╝
-"""
+    ██████╗ ██████╗ ███╗   ██╗████████╗██████╗  ██████╗ ██╗
+   ██╔════╝██╔═══██╗████╗  ██║╚══██╔══╝██╔══██╗██╔═══██╗██║
+   ██║     ██║   ██║██╔██╗ ██║   ██║   ██████╔╝██║   ██║██║
+   ██║     ██║   ██║██║╚██╗██║   ██║   ██╔══██╗██║   ██║██║
+   ╚██████╗╚██████╔╝██║ ╚████║   ██║   ██║  ██║╚██████╔╝███████╗
+    ╚═════╝ ╚═════╝ ╚═╝  ╚═══╝   ╚═╝   ╚═╝  ╚═╝ ╚═════╝ ╚══════╝
 
-        MASCOT = """   """
+   ████████╗ ██████╗ ██╗    ██╗███████╗██████╗
+   ╚══██╔══╝██╔═══██╗██║    ██║██╔════╝██╔══██╗
+      ██║   ██║   ██║██║ █╗ ██║█████╗  ██████╔╝
+      ██║   ██║   ██║██║███╗██║██╔══╝  ██╔══██╗
+      ██║   ╚██████╔╝╚███╔███╔╝███████╗██║  ██║
+      ╚═╝    ╚═════╝  ╚══╝╚══╝ ╚══════╝╚═╝  ╚═╝
+"""
+        MASCOT = """
+
+"""
     else:
         # ASCII fallback (Windows compatible)
         LOGO = r"""
-    ____  __  __      _    ____ _____ _   _ _____
-   |  _ \|  \/  |    / \  / ___| ____| \ | |_   _|
-   | |_) | |\/| |   / _ \| |  _|  _| |  \| | | |
-   |  __/| |  | |  / ___ \ |_| | |___| |\  | | |
-   |_|   |_|  |_| /_/   \_\____|_____|_| \_| |_|
+     ____ ___  _   _ _____ ____   ___  _
+    / ___/ _ \| \ | |_   _|  _ \ / _ \| |
+   | |  | | | |  \| | | | | |_) | | | | |
+   | |__| |_| | |\  | | | |  _ <| |_| | |___
+    \____\___/|_| \_| |_| |_| \_\\___/|_____|
+
+    _____ _____        _______ ____
+   |_   _/ _ \ \      / / ____|  _ \
+     | || | | \ \ /\ / /|  _| | |_) |
+     | || |_| |\ V  V / | |___|  _ <
+     |_| \___/  \_/\_/  |_____|_| \_\
 """
         MASCOT = """
-        +===========+
-        | [ ] Tasks |
-        | [x] Plans |
-        | [ ] Goals |
-        +===========+
-           |   |
-           +===+
+
 """
 
-    TAGLINE = "AI-Powered Project Manager"
+    TAGLINE = "AI-Powered Project Management Control Tower"
 
     try:
         with Live(console=console, refresh_per_second=20, transient=True) as live:
@@ -401,8 +409,8 @@ def show_startup_animation():
 
     except (UnicodeEncodeError, Exception):
         # Simple fallback
-        console.print("\n[bold cyan]PM AGENT[/bold cyan]", justify="center")
-        console.print("[dim cyan]AI-Powered Project Manager[/dim cyan]", justify="center")
+        console.print("\n[bold cyan]CONTROL TOWER[/bold cyan]", justify="center")
+        console.print("[dim cyan]AI-Powered Project Management[/dim cyan]", justify="center")
         console.print()
 
 
@@ -432,7 +440,7 @@ def start_repl(project: Optional[str] = None):
 
     # Show welcome message
     console.print(Panel.fit(
-        "[bold cyan]PM Agent[/bold cyan] - AI-Powered Project Manager\n\n"
+        "[bold cyan]Control Tower[/bold cyan] - AI-Powered Project Management\n\n"
         "Type naturally to chat with the AI, or use slash commands.\n"
         "Type [bold]/help[/bold] for commands or [bold]/exit[/bold] to quit.",
         border_style="cyan"
