@@ -11,6 +11,10 @@ An intelligent CLI tool for managing projects using AI-powered automation with L
 - 📝 Decision logging and documentation
 - 🔄 Persistent conversation memory
 
+
+- Critical path and Monte Carlo risk insights
+- Near-term focus board, artifact vault, and instant documentation export
+
 ## Quick Install (TL;DR)
 
 ```bash
@@ -118,7 +122,9 @@ my-project/
 ├── 02_followups.json           # Action items
 ├── 03_risks_issues.md          # Risks and issues log
 ├── 04_decisions.log            # Decision journal
+├── 05_focus.json               # Near-term focus list snapshot
 ├── gantt_latest.png            # Auto-generated timeline
+├── artifacts/                  # Artifacts vault (analysis, documentation, inputs, exports)
 └── .pm/                        # Agent memory (SQLite)
 ```
 
@@ -168,6 +174,12 @@ pm mobile-app-launch  # Enter REPL in specific project
 - `/plan --edit` - Edit plan in editor
 - `/gantt` - Generate Gantt chart
 - `/gantt --open` - Generate and open chart
+- `/criticalpath` - Run critical path analysis
+- `/risk --iterations 5000` - Monte Carlo schedule risk simulation
+- `/focus --days 14` - Build/save the near-term focus list
+- `/log "message"` - Append structured entries to 04_decisions.log
+- `/documentation` - Generate a Word report inside artifacts/documentation/
+- `/artifacts` - Show the latest supporting files
 - `/followup "task"` - Quick task add
   - Example: `/followup "Fix bug" --due 2025-12-01 --assign john`
 - `/new <name>` - Create new project
@@ -184,6 +196,12 @@ For quick one-off commands without entering the REPL:
 - `pm plan --edit` - Edit plan in editor
 - `pm gantt` - Generate Gantt chart
 - `pm gantt --open` - Generate and open chart
+- `pm criticalpath` - Critical path analysis
+- `pm risk --iterations 5000` - Monte Carlo schedule risk simulation
+- `pm focus --days 14` - Show/update the near-term focus list
+- `pm log "message" --type decision --task 4` - Append to decision log
+- `pm documentation --output artifacts/documentation/brief.docx` - Generate documentation
+- `pm artifacts` - List stored artifacts
 - `pm followup "task" --due DATE --assign NAME` - Quick task add
 - `pm archive` - Archive the current project
 
@@ -244,8 +262,11 @@ Generates an AI summary of progress, great for stand-ups or reports.
 The agent can create files in specific directories:
 - `docs/` - General documentation
 - `attachments/` - PDFs, images, exports
+- `artifacts/` - Structured vault for analysis, documentation, inputs, and exports
 - `05_meeting_notes/` - Meeting notes
 - `documentation.md` - Main living documentation
+
+Run `/documentation` (or `pm documentation`) at any time to collect the charter, plan snapshot, critical path, Monte Carlo analysis, focus list, decision log, and the latest Gantt chart into a Word document saved under `artifacts/documentation/`.
 
 ## Environment Variables
 

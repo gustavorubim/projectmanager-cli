@@ -1,6 +1,6 @@
 """Data models for the PM Agent."""
 
-from datetime import date
+from datetime import date, datetime
 from typing import List, Optional
 from pydantic import BaseModel, Field
 
@@ -15,6 +15,9 @@ class Task(BaseModel):
     due_date: Optional[date] = None
     status: str = "todo"  # todo, in_progress, done, blocked
     dependencies: List[int] = Field(default_factory=list)
+    optimistic_days: Optional[int] = None
+    likely_days: Optional[int] = None
+    pessimistic_days: Optional[int] = None
 
     class Config:
         json_encoders = {
@@ -50,7 +53,42 @@ class ProjectPlan(BaseModel):
                 "start_date": task.start_date.isoformat() if task.start_date else None,
                 "due_date": task.due_date.isoformat() if task.due_date else None,
                 "status": task.status,
-                "dependencies": task.dependencies
+                "dependencies": task.dependencies,
+                "optimistic_days": task.optimistic_days,
+                "likely_days": task.likely_days,
+                "pessimistic_days": task.pessimistic_days
             }
             for task in self.tasks
         ]
+
+
+class FocusItem(BaseModel):
+    """A near-term focus item derived from the plan."""
+
+    task_id: Optional[int] = None
+    title: str
+    due_date: Optional[date] = None
+    status: Optional[str] = None
+    assignee: Optional[str] = None
+    days_remaining: Optional[int] = None
+    reason: str = "due_soon"  # due_soon, overdue, blocked
+
+    class Config:
+        json_encoders = {
+            date: lambda v: v.isoformat() if v else None
+        }
+
+
+class FocusBoard(BaseModel):
+    """Represents the near-term focus list."""
+
+    generated_at: Optional[datetime] = None
+    horizon_days: int = 14
+    max_items: int = 10
+    items: List[FocusItem] = Field(default_factory=list)
+
+    class Config:
+        json_encoders = {
+            date: lambda v: v.isoformat() if v else None,
+            datetime: lambda v: v.isoformat() if v else None
+        }

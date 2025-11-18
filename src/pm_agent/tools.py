@@ -6,7 +6,13 @@ from pathlib import Path
 from typing import Optional, List
 from langchain_core.tools import tool
 
-from .schema import ProjectPlan, Task
+from .schema import ProjectPlan, Task, FocusBoard
+from .analysis import (
+    build_focus_board,
+    compute_critical_path,
+    run_monte_carlo_simulation,
+    summarize_artifacts,
+)
 
 
 def get_project_root() -> Path:
@@ -56,6 +62,33 @@ def ensure_project_files():
     if not decisions_path.exists():
         decisions_path.write_text("# Decision Log\n\n")
 
+    # Create focus list file
+    focus_path = root / "05_focus.json"
+    if not focus_path.exists():
+        focus_path.write_text(json.dumps({
+            "generated_at": None,
+            "horizon_days": 14,
+            "max_items": 10,
+            "items": []
+        }, indent=2))
+
+    # Create artifacts folder structure for easy reference
+    artifacts_root = root / "artifacts"
+    (artifacts_root / "analysis").mkdir(parents=True, exist_ok=True)
+    (artifacts_root / "documentation").mkdir(parents=True, exist_ok=True)
+    (artifacts_root / "inputs").mkdir(parents=True, exist_ok=True)
+    (artifacts_root / "exports").mkdir(parents=True, exist_ok=True)
+    readme_path = artifacts_root / "README.md"
+    if not readme_path.exists():
+        readme_path.write_text(
+            "# Artifacts Archive\n\n"
+            "Store supporting documents, exports, and generated reports here so the agent can reference them.\n"
+            "- analysis/: Outputs such as Monte Carlo charts or CSVs\n"
+            "- documentation/: Generated briefings and Word reports\n"
+            "- inputs/: Raw materials supplied by stakeholders\n"
+            "- exports/: Anything you share externally\n"
+        )
+
     # Create .pm directory for agent memory
     pm_dir = root / ".pm"
     pm_dir.mkdir(exist_ok=True)
@@ -89,6 +122,34 @@ def save_plan(plan: ProjectPlan):
     plan_path = root / "01_plan.json"
 
     plan_path.write_text(json.dumps(plan.to_json_list(), indent=2))
+
+
+def load_focus_board() -> FocusBoard:
+    """Load the focus board from 05_focus.json."""
+    root = get_project_root()
+    focus_path = root / "05_focus.json"
+
+    if not focus_path.exists():
+        return FocusBoard()
+
+    data = json.loads(focus_path.read_text())
+
+    generated_at = data.get("generated_at")
+    if generated_at:
+        data["generated_at"] = datetime.fromisoformat(generated_at)
+
+    for item in data.get("items", []):
+        if item.get("due_date"):
+            item["due_date"] = date.fromisoformat(item["due_date"])
+
+    return FocusBoard(**data)
+
+
+def save_focus_board(board: FocusBoard):
+    """Persist the focus board representation."""
+    root = get_project_root()
+    focus_path = root / "05_focus.json"
+    focus_path.write_text(board.model_dump_json(indent=2))
 
 
 @tool
@@ -285,15 +346,122 @@ def write_file(filename: str, content: str) -> str:
         filename.startswith("docs/") or
         filename.startswith("attachments/") or
         filename == "documentation.md" or
-        filename.startswith("05_meeting_notes/")
+        filename.startswith("05_meeting_notes/") or
+        filename.startswith("artifacts/")
     ):
-        return f"Error: Can only create files in docs/, attachments/, 05_meeting_notes/, or documentation.md"
+        return (
+            "Error: Can only create files in docs/, attachments/, 05_meeting_notes/, "
+            "artifacts/, or documentation.md"
+        )
 
     # Create parent directories if needed
     file_path.parent.mkdir(parents=True, exist_ok=True)
 
     file_path.write_text(content)
     return f"File {filename} created successfully."
+
+
+@tool
+def focus_overview(horizon_days: int = 14, limit: int = 10) -> str:
+    """Generate (and persist) a near-term focus board summary."""
+    plan = load_plan()
+    if not plan.tasks:
+        return "No tasks available to build a focus list."
+
+    board = build_focus_board(plan, horizon_days=horizon_days, limit=limit)
+    save_focus_board(board)
+
+    if not board.items:
+        return f"No tasks due within {horizon_days} days and no blocked work."
+
+    lines = [
+        f"Focus horizon: {board.horizon_days} days | generated at {board.generated_at}",
+        "Items:"
+    ]
+    for item in board.items:
+        status = item.status or "unknown"
+        due = item.due_date.isoformat() if item.due_date else "no due date"
+        reason = item.reason.replace("_", " ")
+        days = f"{item.days_remaining}d" if item.days_remaining is not None else "n/a"
+        lines.append(
+            f"- #{item.task_id or '?'} {item.title} ({status}) due {due} | "
+            f"{reason} | {days} remaining"
+        )
+
+    return "\n".join(lines)
+
+
+@tool
+def critical_path_snapshot() -> str:
+    """Return a textual critical path analysis."""
+    plan = load_plan()
+    if not plan.tasks:
+        return "No tasks defined for critical path analysis."
+
+    result = compute_critical_path(plan)
+    if not result.tasks:
+        return "Unable to compute critical path (check dependencies)."
+
+    lines = [
+        f"Critical path length: {result.total_duration} days starting {result.project_start}"
+    ]
+    for entry in result.tasks:
+        marker = "CRITICAL" if entry.is_critical else f"Slack {entry.slack}d"
+        lines.append(
+            f"- #{entry.task_id} {entry.title} | {marker} | "
+            f"ES {entry.earliest_start} -> EF {entry.earliest_finish}"
+        )
+
+    if result.warnings:
+        lines.append("\nWarnings:")
+        lines.extend(f"* {w}" for w in result.warnings)
+
+    return "\n".join(lines)
+
+
+@tool
+def schedule_risk_report(iterations: int = 2000) -> str:
+    """Run a Monte Carlo schedule risk simulation."""
+    plan = load_plan()
+    if not plan.tasks:
+        return "No tasks defined to run Monte Carlo schedule analysis."
+
+    result = run_monte_carlo_simulation(plan, iterations=iterations)
+    percentiles = result.finish_percentiles
+    lines = [
+        f"Monte Carlo (n={iterations}) shows:",
+        f"- P10 completion: {percentiles['p10']}",
+        f"- P50 completion: {percentiles['p50']}",
+        f"- P90 completion: {percentiles['p90']}",
+    ]
+
+    if result.risk_drivers:
+        lines.append("\nTop risk drivers:")
+        for driver in result.risk_drivers[:5]:
+            lines.append(
+                f"- #{driver.task_id} {driver.title} | corr {driver.correlation:.2f} | "
+                f"avg duration {driver.avg_duration:.1f}d"
+            )
+
+    return "\n".join(lines)
+
+
+@tool
+def list_project_artifacts(max_items: int = 15) -> str:
+    """List recent files in the artifacts folder for quick reference."""
+    root = get_project_root()
+    artifacts = summarize_artifacts(root, max_items=max_items)
+
+    if not artifacts:
+        return "No artifacts stored yet."
+
+    lines = ["Artifacts catalog:"]
+    for art in artifacts:
+        lines.append(
+            f"- {art.path} ({art.size_kb:.1f} KB, updated {art.modified.isoformat()})"
+        )
+
+    return "\n".join(lines)
 
 
 # Export all tools
@@ -303,5 +471,9 @@ TOOLS = [
     add_task,
     update_task,
     append_log,
-    write_file
+    write_file,
+    focus_overview,
+    critical_path_snapshot,
+    schedule_risk_report,
+    list_project_artifacts,
 ]

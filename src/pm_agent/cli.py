@@ -5,6 +5,7 @@ import sys
 import json
 import subprocess
 import time
+import shlex
 from pathlib import Path
 from typing import Optional
 from datetime import datetime
@@ -21,7 +22,20 @@ from rich import print as rprint
 from langchain_core.messages import HumanMessage
 
 from .agent import create_agent, run_agent
-from .tools import load_plan, ensure_project_files, get_project_root
+from .analysis import (
+    build_focus_board,
+    compute_critical_path,
+    run_monte_carlo_simulation,
+    summarize_artifacts,
+)
+from .reporting import generate_documentation_report
+from .tools import (
+    load_plan,
+    ensure_project_files,
+    get_project_root,
+    load_focus_board,
+    save_focus_board,
+)
 from .viz import generate_gantt, render_text_gantt
 
 app = typer.Typer(help="CLI Project Manager Agent", invoke_without_command=True)
@@ -45,6 +59,12 @@ def show_help():
     console.print("  /gantt --open        Display chart + save PNG + open file")
     console.print("  /followup <task>     Quick add task")
     console.print("    [dim]Example: /followup \"Fix bug\" --due 2025-12-01 --assign john[/dim]")
+    console.print("  /criticalpath        Run critical path analysis")
+    console.print("  /risk                Run Monte Carlo schedule risk simulation")
+    console.print("  /focus               Build/show near-term task list")
+    console.print("  /log \"...\"          Append an entry to the decision log")
+    console.print("  /documentation       Generate a Word report with artifacts")
+    console.print("  /artifacts           List recent files in artifacts/")
     console.print("  /new <project>       Create new project")
     console.print("  /archive             Archive current project")
     console.print("  /help                Show this help")
@@ -213,6 +233,206 @@ def handle_followup_command(args: list):
     console.print("[green]OK[/green] " + response)
 
 
+def render_critical_path():
+    """Display the critical path table."""
+    plan = load_plan()
+
+    if not plan.tasks:
+        console.print("[yellow]No tasks found. Add tasks before running critical path analysis.[/yellow]")
+        return
+
+    result = compute_critical_path(plan)
+    if not result.tasks:
+        console.print("[red]Unable to compute critical path. Check for dependency cycles.[/red]")
+        return
+
+    table = Table(title="Critical Path Analysis")
+    table.add_column("ID", style="cyan", no_wrap=True)
+    table.add_column("Task", style="white")
+    table.add_column("Earliest Window", style="green")
+    table.add_column("Latest Window", style="magenta")
+    table.add_column("Slack (d)", style="yellow", justify="right")
+
+    for task in result.tasks:
+        style = "red" if task.is_critical else "white"
+        table.add_row(
+            str(task.task_id),
+            f"[{style}]{task.title}[/{style}]",
+            f"{task.earliest_start} → {task.earliest_finish}",
+            f"{task.latest_start} → {task.latest_finish}",
+            str(task.slack)
+        )
+
+    console.print(table)
+    console.print(f"\nProject duration estimate: {result.total_duration} days starting {result.project_start}")
+
+    if result.warnings:
+        console.print(Panel("\n".join(result.warnings), title="Warnings", border_style="yellow"))
+
+
+def render_risk_simulation(iterations: int = 2000):
+    """Run Monte Carlo schedule risk simulation and display results."""
+    plan = load_plan()
+
+    if not plan.tasks:
+        console.print("[yellow]No tasks found. Add tasks before running risk simulation.[/yellow]")
+        return
+
+    with console.status("[cyan]Running Monte Carlo simulation...[/cyan]"):
+        result = run_monte_carlo_simulation(plan, iterations=iterations)
+
+    percentiles = result.finish_percentiles
+    panel_text = (
+        f"P10 completion: {percentiles['p10']}\n"
+        f"P50 completion: {percentiles['p50']}\n"
+        f"P90 completion: {percentiles['p90']}\n"
+        f"Iterations: {iterations}"
+    )
+    console.print(Panel(panel_text, title="Schedule Risk", border_style="cyan"))
+
+    if result.risk_drivers:
+        table = Table(title="Top Risk Drivers")
+        table.add_column("ID", style="cyan")
+        table.add_column("Task", style="white")
+        table.add_column("Correlation", style="magenta", justify="right")
+        table.add_column("Avg Duration (d)", style="yellow", justify="right")
+
+        for driver in result.risk_drivers[:5]:
+            table.add_row(
+                str(driver.task_id),
+                driver.title,
+                f"{driver.correlation:.2f}",
+                f"{driver.avg_duration:.1f}"
+            )
+
+        console.print(table)
+
+
+def render_focus_board(horizon_days: int = 14, limit: int = 10):
+    """Generate and display the near-term focus list."""
+    plan = load_plan()
+    if not plan.tasks:
+        console.print("[yellow]Add tasks first to build a focus list.[/yellow]")
+        return
+
+    board = build_focus_board(plan, horizon_days=horizon_days, limit=limit)
+    save_focus_board(board)
+
+    if not board.items:
+        console.print(f"[green]No tasks due within {horizon_days} days or blocking progress.[/green]")
+        return
+
+    table = Table(title=f"Focus List - Next {horizon_days} Days")
+    table.add_column("ID", style="cyan", no_wrap=True)
+    table.add_column("Task", style="white")
+    table.add_column("Due", style="yellow")
+    table.add_column("Owner", style="green")
+    table.add_column("Status", style="magenta")
+    table.add_column("Reason", style="red")
+
+    for item in board.items:
+        days = f"{item.days_remaining}d" if item.days_remaining is not None else "-"
+        reason = item.reason.replace("_", " ").title()
+        table.add_row(
+            str(item.task_id or "?"),
+            item.title,
+            item.due_date.isoformat() if item.due_date else "-",
+            item.assignee or "Unassigned",
+            item.status or "-",
+            f"{reason} ({days})"
+        )
+
+    console.print(table)
+    console.print("[dim]Saved to 05_focus.json[/dim]")
+
+
+def append_decision_log(message: str, entry_type: str = "note", tags: Optional[list] = None, task_id: Optional[str] = None):
+    """Append a structured entry to 04_decisions.log."""
+    root = get_project_root()
+    log_path = root / "04_decisions.log"
+    tags = tags or []
+
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M")
+    lines = [f"\n## {timestamp} [{entry_type.upper()}]"]
+    if task_id:
+        lines.append(f"Task: #{task_id}")
+    if tags:
+        lines.append(f"Tags: {', '.join(tags)}")
+    lines.append(message)
+    lines.append("")
+
+    with open(log_path, "a", encoding="utf-8") as handle:
+        handle.write("\n".join(lines))
+
+    console.print(f"[green]Logged entry in {log_path.name}[/green]")
+
+
+def render_artifacts(limit: int = 15):
+    """List recent artifacts stored under artifacts/."""
+    root = get_project_root()
+    items = summarize_artifacts(root, max_items=limit)
+
+    if not items:
+        console.print("[yellow]No artifacts found. Save Gantt charts or documentation to artifacts/.[/yellow]")
+        return
+
+    table = Table(title="Artifacts Archive")
+    table.add_column("Path", style="white")
+    table.add_column("Size (KB)", style="yellow", justify="right")
+    table.add_column("Last Modified", style="green")
+
+    for item in items:
+        table.add_row(
+            item.path,
+            f"{item.size_kb:.1f}",
+            item.modified.strftime("%Y-%m-%d %H:%M")
+        )
+
+    console.print(table)
+
+
+def generate_documentation(
+    output_path: Optional[str] = None,
+    iterations: int = 2000,
+    focus_days: int = 14
+):
+    """Generate a comprehensive Word document with current project data."""
+    plan = load_plan()
+    focus_board = build_focus_board(plan, horizon_days=focus_days, limit=20)
+    save_focus_board(focus_board)
+    critical_path = compute_critical_path(plan)
+    risk_result = run_monte_carlo_simulation(plan, iterations=iterations)
+    root = get_project_root()
+    artifacts = summarize_artifacts(root, max_items=50)
+
+    if output_path:
+        doc_path = Path(output_path)
+        if not doc_path.is_absolute():
+            doc_path = root / doc_path
+    else:
+        doc_path = root / "artifacts" / "documentation" / f"{root.name}_project_brief.docx"
+
+    doc_path.parent.mkdir(parents=True, exist_ok=True)
+
+    console.print("[cyan]Refreshing Gantt chart for the report...[/cyan]")
+    generate_gantt()
+    gantt_path = root / "gantt_latest.png"
+
+    with console.status("[cyan]Building documentation...[/cyan]"):
+        output_file = generate_documentation_report(
+            plan=plan,
+            focus_board=focus_board,
+            critical_path=critical_path,
+            monte_carlo=risk_result,
+            artifacts=artifacts,
+            output_path=doc_path,
+            project_root=root,
+            gantt_path=gantt_path,
+        )
+
+    console.print(f"[green]Documentation saved to {output_file}[/green]")
+
+
 def handle_new_command(args: list):
     """Handle /new command."""
     if not args:
@@ -265,10 +485,147 @@ def handle_archive_command(args: list):
         console.print(f"[red]Error: {e}[/red]")
 
 
+def handle_critical_path_command(args: list):
+    """Adapter for slash/CLI invocations."""
+    render_critical_path()
+
+
+def handle_risk_command(args: list):
+    """Adapter for running Monte Carlo analysis."""
+    iterations = 2000
+    i = 0
+    while i < len(args):
+        if args[i] in ("--iterations", "-n") and i + 1 < len(args):
+            try:
+                iterations = int(args[i + 1])
+            except ValueError:
+                console.print("[red]--iterations expects an integer[/red]")
+                return
+            i += 2
+        else:
+            i += 1
+    render_risk_simulation(iterations)
+
+
+def handle_focus_command(args: list):
+    """Adapter for building/showing the focus list."""
+    horizon = 14
+    limit = 10
+    i = 0
+    while i < len(args):
+        if args[i] == "--days" and i + 1 < len(args):
+            try:
+                horizon = int(args[i + 1])
+            except ValueError:
+                console.print("[red]--days expects an integer[/red]")
+                return
+            i += 2
+        elif args[i] == "--limit" and i + 1 < len(args):
+            try:
+                limit = int(args[i + 1])
+            except ValueError:
+                console.print("[red]--limit expects an integer[/red]")
+                return
+            i += 2
+        else:
+            i += 1
+
+    render_focus_board(horizon_days=horizon, limit=limit)
+
+
+def handle_log_command(args: list):
+    """Adapter for writing structured log entries."""
+    if not args:
+        console.print("[red]Usage: /log \"message\" [--type decision] [--task 3] [--tags a,b][/red]")
+        return
+
+    entry_type = "note"
+    tags: list = []
+    task_id = None
+    message_parts = []
+
+    i = 0
+    while i < len(args):
+        token = args[i]
+        if token == "--type" and i + 1 < len(args):
+            entry_type = args[i + 1]
+            i += 2
+        elif token == "--task" and i + 1 < len(args):
+            task_id = args[i + 1]
+            i += 2
+        elif token == "--tags" and i + 1 < len(args):
+            tags = [tag.strip() for tag in args[i + 1].split(",") if tag.strip()]
+            i += 2
+        else:
+            message_parts.append(token)
+            i += 1
+
+    message = " ".join(message_parts).strip()
+    if not message:
+        console.print("[red]Log message cannot be empty.[/red]")
+        return
+
+    append_decision_log(message, entry_type, tags, task_id)
+
+
+def handle_documentation_command(args: list):
+    """Adapter for generating documentation."""
+    output_path = None
+    iterations = 2000
+    focus_days = 14
+
+    i = 0
+    while i < len(args):
+        token = args[i]
+        if token in ("--output", "-o") and i + 1 < len(args):
+            output_path = args[i + 1]
+            i += 2
+        elif token in ("--iterations", "-n") and i + 1 < len(args):
+            try:
+                iterations = int(args[i + 1])
+            except ValueError:
+                console.print("[red]--iterations expects an integer[/red]")
+                return
+            i += 2
+        elif token == "--focus-days" and i + 1 < len(args):
+            try:
+                focus_days = int(args[i + 1])
+            except ValueError:
+                console.print("[red]--focus-days expects an integer[/red]")
+                return
+            i += 2
+        else:
+            i += 1
+
+    generate_documentation(output_path=output_path, iterations=iterations, focus_days=focus_days)
+
+
+def handle_artifacts_command(args: list):
+    """Adapter for listing artifacts."""
+    limit = 15
+    i = 0
+    while i < len(args):
+        if args[i] == "--limit" and i + 1 < len(args):
+            try:
+                limit = int(args[i + 1])
+            except ValueError:
+                console.print("[red]--limit expects an integer[/red]")
+                return
+            i += 2
+        else:
+            i += 1
+
+    render_artifacts(limit=limit)
+
+
 def parse_slash_command(user_input: str):
     """Parse slash command and execute it."""
     # Remove leading slash and split into parts
-    parts = user_input[1:].split()
+    try:
+        parts = shlex.split(user_input[1:])
+    except ValueError as exc:
+        console.print(f"[red]Error parsing command: {exc}[/red]")
+        return False
 
     if not parts:
         return False
@@ -288,6 +645,18 @@ def parse_slash_command(user_input: str):
         handle_gantt_command(args)
     elif command == "followup":
         handle_followup_command(args)
+    elif command in ("criticalpath", "cp"):
+        handle_critical_path_command(args)
+    elif command in ("risk", "montecarlo"):
+        handle_risk_command(args)
+    elif command == "focus":
+        handle_focus_command(args)
+    elif command == "log":
+        handle_log_command(args)
+    elif command in ("documentation", "doc"):
+        handle_documentation_command(args)
+    elif command in ("artifacts", "artifact"):
+        handle_artifacts_command(args)
     elif command == "new":
         handle_new_command(args)
     elif command == "archive":
@@ -450,6 +819,23 @@ def start_repl(project: Optional[str] = None):
     try:
         root = get_project_root()
         console.print(f"\n[dim]Current project: {root.name}[/dim]\n")
+        try:
+            focus_board = load_focus_board()
+            if focus_board.items:
+                preview_rows = []
+                for item in focus_board.items[:3]:
+                    due = item.due_date.isoformat() if item.due_date else "-"
+                    preview_rows.append(
+                        f"#{item.task_id or '?'} {item.title} ({item.status or 'todo'}) → {due}"
+                    )
+                console.print(Panel(
+                    "\n".join(preview_rows),
+                    title="Near-Term Focus",
+                    border_style="magenta"
+                ))
+                console.print()
+        except Exception:
+            pass
     except Exception:
         console.print(f"\n[yellow]Not in a project directory. Use /new <name> to create one.[/yellow]\n")
 
@@ -555,6 +941,55 @@ def followup(
 def archive():
     """Archive the current project."""
     handle_archive_command([])
+
+
+@app.command()
+def criticalpath():
+    """Run a critical path analysis."""
+    render_critical_path()
+
+
+@app.command()
+def risk(iterations: int = typer.Option(2000, "--iterations", "-n", help="Number of Monte Carlo runs")):
+    """Run Monte Carlo schedule risk simulation."""
+    render_risk_simulation(iterations)
+
+
+@app.command()
+def focus(
+    days: int = typer.Option(14, "--days", help="Planning horizon in days"),
+    limit: int = typer.Option(10, "--limit", help="Max number of items to show")
+):
+    """Display the near-term focus list."""
+    render_focus_board(horizon_days=days, limit=limit)
+
+
+@app.command()
+def log(
+    entry: str = typer.Argument(..., help="Message to log"),
+    entry_type: str = typer.Option("note", "--type", help="Entry type, e.g., decision, issue"),
+    task: Optional[str] = typer.Option(None, "--task", help="Related task ID"),
+    tags: Optional[str] = typer.Option(None, "--tags", help="Comma-separated tags")
+):
+    """Append an entry to 04_decisions.log."""
+    tags_list = [tag.strip() for tag in tags.split(",")] if tags else []
+    append_decision_log(entry, entry_type, tags_list, task)
+
+
+@app.command()
+def documentation(
+    output: Optional[str] = typer.Option(None, "--output", "-o", help="Output file path"),
+    iterations: int = typer.Option(2000, "--iterations", "-n", help="Monte Carlo iterations"),
+    focus_days: int = typer.Option(14, "--focus-days", help="Focus list horizon in days")
+):
+    """Generate a comprehensive Word document with project status."""
+    generate_documentation(output_path=output, iterations=iterations, focus_days=focus_days)
+
+
+@app.command()
+def artifacts(limit: int = typer.Option(15, "--limit", help="Number of artifacts to list")):
+    """List the latest files stored under artifacts/."""
+    render_artifacts(limit=limit)
 
 
 if __name__ == "__main__":
