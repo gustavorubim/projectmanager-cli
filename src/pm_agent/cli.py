@@ -35,6 +35,8 @@ from .tools import (
     get_project_root,
     load_focus_board,
     save_focus_board,
+    import_plan_from_csv,
+    save_plan,
 )
 from .viz import generate_gantt, render_text_gantt
 
@@ -55,6 +57,7 @@ def show_help():
     console.print("  /status --week       Get AI weekly summary")
     console.print("  /plan                View the plan JSON")
     console.print("  /plan --edit         Edit plan in editor")
+    console.print("  /plan --update-from-csv [file]  Import plan edits from CSV")
     console.print("  /gantt               Display Gantt chart in CLI + save PNG")
     console.print("  /gantt --open        Display chart + save PNG + open file")
     console.print("  /followup <task>     Quick add task")
@@ -128,6 +131,29 @@ def handle_plan_command(args: list):
     """Handle /plan command."""
     edit_mode = "--edit" in args
     plan_path = get_project_root() / "01_plan.json"
+
+    # CSV import flag
+    csv_path = None
+    if "--csv-path" in args:
+        csv_idx = args.index("--csv-path")
+        if csv_idx + 1 < len(args):
+            csv_path = args[csv_idx + 1]
+    if "--update-from-csv" in args:
+        idx = args.index("--update-from-csv")
+        # optional path argument immediately after flag
+        if idx + 1 < len(args) and not args[idx + 1].startswith("--"):
+            csv_path = args[idx + 1]
+        console.print("[cyan]Importing plan data from CSV...[/cyan]")
+        try:
+            plan = import_plan_from_csv(csv_path)
+            save_plan(plan)
+            console.print("[green]OK[/green] Plan updated from CSV.")
+            console.print("[cyan]Regenerating Gantt chart...[/cyan]")
+            generate_gantt()
+            console.print("[green]OK[/green] Gantt chart updated!")
+        except Exception as e:
+            console.print(f"[red]Error importing CSV: {e}[/red]")
+        return
 
     if not plan_path.exists():
         console.print("[yellow]No plan found. Creating one...[/yellow]")
@@ -909,9 +935,27 @@ def status(week: bool = typer.Option(False, "--week", help="Get weekly summary")
 
 
 @app.command()
-def plan(edit: bool = typer.Option(False, "--edit", help="Edit plan in editor")):
+def plan(
+    edit: bool = typer.Option(False, "--edit", help="Edit plan in editor"),
+    update_from_csv: bool = typer.Option(
+        False,
+        "--update-from-csv",
+        help="Import plan data from CSV (default: plan.csv)"
+    ),
+    csv_path: Optional[str] = typer.Option(
+        None,
+        "--csv-path",
+        help="Path to plan CSV (used with --update-from-csv)"
+    ),
+):
     """Show or edit the project plan."""
-    args = ["--edit"] if edit else []
+    args = []
+    if edit:
+        args.append("--edit")
+    if update_from_csv:
+        args.append("--update-from-csv")
+        if csv_path:
+            args.append(csv_path)
     handle_plan_command(args)
 
 

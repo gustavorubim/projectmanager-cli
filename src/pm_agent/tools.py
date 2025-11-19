@@ -1,5 +1,6 @@
 """Tools for reading and writing project files."""
 
+import csv
 import json
 from datetime import datetime, date
 from pathlib import Path
@@ -18,6 +19,20 @@ from .analysis import (
 def get_project_root() -> Path:
     """Get the current project root directory."""
     return Path.cwd()
+
+
+PLAN_CSV_FIELDS = [
+    "id",
+    "title",
+    "assignee",
+    "start_date",
+    "due_date",
+    "status",
+    "dependencies",
+    "optimistic_days",
+    "likely_days",
+    "pessimistic_days",
+]
 
 
 def ensure_project_files():
@@ -46,6 +61,11 @@ def ensure_project_files():
     plan_path = root / "01_plan.json"
     if not plan_path.exists():
         plan_path.write_text("[]")
+        export_plan_to_csv(ProjectPlan())
+    else:
+        csv_path = root / "plan.csv"
+        if not csv_path.exists():
+            export_plan_to_csv(load_plan())
 
     # Create followups if not exists
     followups_path = root / "02_followups.json"
@@ -122,6 +142,112 @@ def save_plan(plan: ProjectPlan):
     plan_path = root / "01_plan.json"
 
     plan_path.write_text(json.dumps(plan.to_json_list(), indent=2))
+    export_plan_to_csv(plan)
+
+
+def _resolve_csv_path(csv_file: Optional[str] = None) -> Path:
+    root = get_project_root()
+    if csv_file:
+        csv_path = Path(csv_file)
+        if not csv_path.is_absolute():
+            csv_path = root / csv_path
+    else:
+        csv_path = root / "plan.csv"
+    csv_path.parent.mkdir(parents=True, exist_ok=True)
+    return csv_path
+
+
+def export_plan_to_csv(plan: ProjectPlan, csv_file: Optional[str] = None):
+    """Write the project plan to a CSV file for manual editing."""
+    csv_path = _resolve_csv_path(csv_file)
+    with open(csv_path, "w", encoding="utf-8", newline="") as handle:
+        writer = csv.DictWriter(handle, fieldnames=PLAN_CSV_FIELDS)
+        writer.writeheader()
+        for task in plan.tasks:
+            writer.writerow({
+                "id": task.id,
+                "title": task.title,
+                "assignee": task.assignee or "",
+                "start_date": task.start_date.isoformat() if task.start_date else "",
+                "due_date": task.due_date.isoformat() if task.due_date else "",
+                "status": task.status,
+                "dependencies": ",".join(str(dep) for dep in task.dependencies),
+                "optimistic_days": task.optimistic_days or "",
+                "likely_days": task.likely_days or "",
+                "pessimistic_days": task.pessimistic_days or "",
+            })
+
+
+def import_plan_from_csv(csv_file: Optional[str] = None) -> ProjectPlan:
+    """Load plan data from a CSV file and return a ProjectPlan object."""
+    csv_path = _resolve_csv_path(csv_file)
+    if not csv_path.exists():
+        raise FileNotFoundError(f"CSV file not found: {csv_path}")
+
+    def parse_date(value: Optional[str]) -> Optional[date]:
+        if not value:
+            return None
+        value = value.strip()
+        if not value:
+            return None
+        # Try ISO format first
+        try:
+            return date.fromisoformat(value)
+        except ValueError:
+            pass
+        # Try common alternatives (e.g., MM/DD/YYYY)
+        for fmt in ("%m/%d/%Y", "%m/%d/%y", "%Y/%m/%d"):
+            try:
+                return datetime.strptime(value, fmt).date()
+            except ValueError:
+                continue
+        raise ValueError(f"Invalid date format '{value}'. Use YYYY-MM-DD or MM/DD/YYYY.")
+
+    def parse_int(value: Optional[str]) -> Optional[int]:
+        if value is None:
+            return None
+        value = value.strip()
+        if not value:
+            return None
+        return int(float(value))
+
+    tasks: List[Task] = []
+    with open(csv_path, "r", encoding="utf-8", newline="") as handle:
+        reader = csv.DictReader(handle)
+        for row in reader:
+            if not row.get("id"):
+                continue
+            try:
+                task_id = int(row["id"])
+            except ValueError as exc:
+                raise ValueError(f"Invalid task ID '{row['id']}' in CSV") from exc
+
+            deps_str = (row.get("dependencies") or "").strip()
+            dependencies: List[int] = []
+            if deps_str:
+                for dep in deps_str.split(","):
+                    dep = dep.strip()
+                    if dep:
+                        try:
+                            dependencies.append(int(dep))
+                        except ValueError as exc:
+                            raise ValueError(f"Invalid dependency '{dep}' for task {task_id}") from exc
+
+            task = Task(
+                id=task_id,
+                title=row.get("title", "").strip() or f"Task {task_id}",
+                assignee=row.get("assignee") or None,
+                start_date=parse_date(row.get("start_date")),
+                due_date=parse_date(row.get("due_date")),
+                status=(row.get("status") or "todo").strip() or "todo",
+                dependencies=dependencies,
+                optimistic_days=parse_int(row.get("optimistic_days")),
+                likely_days=parse_int(row.get("likely_days")),
+                pessimistic_days=parse_int(row.get("pessimistic_days")),
+            )
+            tasks.append(task)
+
+    return ProjectPlan(tasks=tasks)
 
 
 def load_focus_board() -> FocusBoard:

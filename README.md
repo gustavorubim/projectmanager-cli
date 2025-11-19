@@ -14,6 +14,7 @@ An intelligent CLI tool for managing projects using AI-powered automation with L
 
 - Critical path and Monte Carlo risk insights
 - Near-term focus board, artifact vault, and instant documentation export
+- Spreadsheet-friendly `plan.csv` mirror with slash command syncing
 
 ## Quick Install (TL;DR)
 
@@ -123,6 +124,7 @@ my-project/
 ├── 03_risks_issues.md          # Risks and issues log
 ├── 04_decisions.log            # Decision journal
 ├── 05_focus.json               # Near-term focus list snapshot
+├── plan.csv                    # Spreadsheet-friendly mirror of 01_plan.json
 ├── gantt_latest.png            # Auto-generated timeline
 ├── artifacts/                  # Artifacts vault (analysis, documentation, inputs, exports)
 └── .pm/                        # Agent memory (SQLite)
@@ -172,6 +174,7 @@ pm mobile-app-launch  # Enter REPL in specific project
 - `/status --week` - Get AI weekly summary
 - `/plan` - View the plan JSON
 - `/plan --edit` - Edit plan in editor
+- `/plan --update-from-csv [path]` - Import plan edits from CSV (defaults to `plan.csv`)
 - `/gantt` - Generate Gantt chart
 - `/gantt --open` - Generate and open chart
 - `/criticalpath` - Run critical path analysis
@@ -194,6 +197,7 @@ For quick one-off commands without entering the REPL:
 - `pm status --week` - Get AI weekly summary
 - `pm plan` - View the plan JSON
 - `pm plan --edit` - Edit plan in editor
+- `pm plan --update-from-csv --csv-path plan.csv` - Import plan updates from CSV
 - `pm gantt` - Generate Gantt chart
 - `pm gantt --open` - Generate and open chart
 - `pm criticalpath` - Critical path analysis
@@ -204,6 +208,12 @@ For quick one-off commands without entering the REPL:
 - `pm artifacts` - List stored artifacts
 - `pm followup "task" --due DATE --assign NAME` - Quick task add
 - `pm archive` - Archive the current project
+
+### Editing the Plan via CSV
+- `plan.csv` is regenerated automatically every time the agent updates `01_plan.json`, so you can open it in Excel/Sheets for bulk edits.
+- After editing the CSV, sync it back with `/plan --update-from-csv [optional_csv_path]` or `pm plan --update-from-csv --csv-path my_plan.csv`.
+- The import validates IDs, dependencies, and dates, rewrites the JSON source of truth, and regenerates the Gantt chart so every artifact reflects your spreadsheet edits.
+- Keep the CSV header row intact (`id,title,assignee,...`). Leave cells blank to clear values; list dependencies as comma-separated IDs (e.g., `1,2,5`).
 
 ## Project File Structure
 
