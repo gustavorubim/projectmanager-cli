@@ -24,6 +24,7 @@ from prompt_toolkit import PromptSession
 from prompt_toolkit.completion import Completer, Completion
 from prompt_toolkit.document import Document
 from prompt_toolkit.auto_suggest import AutoSuggestFromHistory
+from prompt_toolkit.formatted_text import HTML
 
 from .agent import create_agent, run_agent
 from .analysis import (
@@ -922,7 +923,7 @@ def start_repl(project: Optional[str] = None):
     while True:
         try:
             # Get user input (with slash completion)
-            user_input = session.prompt("[bold cyan]>[/bold cyan] ")
+            user_input = session.prompt(HTML("<ansicyan><b>></b></ansicyan> "))
 
             if not user_input.strip():
                 continue

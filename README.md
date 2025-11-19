@@ -353,3 +353,83 @@ However, regular pip works perfectly fine if you prefer it!
 ## License
 
 MIT
+
+## Visual Architecture
+
+### Agent ReAct Loop
+The core LangGraph cycle where the agent reasons, selects tools, executes them, and persists state.
+
+```mermaid
+flowchart LR
+    In([User Input]) --> Agent
+    
+    subgraph ReAct_Loop [LangGraph ReAct Loop]
+        direction TB
+        Agent[Agent Node<br/>GPT-4o]
+        Tools[Tool Execution]
+        
+        Agent -- "Decides to act" --> Tools
+        Tools -- "Returns result" --> Agent
+    end
+    
+    Agent -- "Final Answer" --> Out([Response])
+    
+    subgraph Memory [Persistence]
+        DB[(SQLite<br/>.pm/state.sqlite)]
+        DB <--> ReAct_Loop
+    end
+```
+
+### System Ecosystem & Features
+How the CLI interacts with the file system, inputs, and outputs.
+
+```mermaid
+graph TD
+    User((User))
+    
+    subgraph CLI [CLI Interface]
+        Chat[Natural Language Chat]
+        Slash[Slash Commands<br/>/plan, /gantt, /risk]
+    end
+    
+    subgraph Brain [Intelligence Layer]
+        Agent[LangGraph Agent]
+        Planner[Planning Engine]
+    end
+    
+    subgraph Storage [Local File System]
+        JSON[01_plan.json]
+        MD[Markdown Docs]
+        CSV[plan.csv]
+        Logs[Decision Logs]
+    end
+    
+    subgraph Outputs [Visualizations & Reports]
+        Gantt[Gantt Chart]
+        Risk[Monte Carlo Risk]
+        Focus[Focus Board]
+        Docs[Word Reports]
+    end
+
+    User --> Chat
+    User --> Slash
+    
+    Chat --> Agent
+    Slash --> Agent
+    Slash --> Planner
+    
+    Agent <--> Planner
+    
+    Planner <--> JSON
+    Planner <--> CSV
+    Agent --> MD
+    Agent --> Logs
+    
+    JSON --> Gantt
+    JSON --> Risk
+    JSON --> Focus
+    
+    MD --> Docs
+    Risk --> Docs
+    Gantt --> Docs
+```
