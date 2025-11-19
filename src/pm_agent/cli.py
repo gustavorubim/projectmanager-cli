@@ -6,8 +6,9 @@ import json
 import subprocess
 import time
 import shlex
+from collections import Counter, defaultdict
 from pathlib import Path
-from typing import Optional, List
+from typing import Optional, List, Dict
 from datetime import datetime, date, timedelta
 
 import typer
@@ -34,6 +35,7 @@ from .analysis import (
     summarize_artifacts,
     summarize_monte_carlo,
 )
+from .schema import Task
 from .analytics import (
     record_status_snapshot,
     load_status_history,
@@ -81,6 +83,7 @@ SLASH_COMMANDS = {
     "risk": "/risk                Monte Carlo schedule risk",
     "forecast": "/forecast           Advanced Monte Carlo forecast",
     "health": "/health              Show health signals dashboard",
+    "workload": "/workload           Prioritization + capacity dashboard",
     "focus": "/focus               Build/show near-term task list",
     "log": "/log \"...\"          Append entry to log",
     "documentation": "/documentation       Generate Word report",
@@ -135,6 +138,7 @@ def show_help():
     console.print("  /risk                Run Monte Carlo schedule risk simulation")
     console.print("  /forecast            Advanced Monte Carlo forecast (costs, deadlines)")
     console.print("  /health              Show trend dashboard + export charts")
+    console.print("  /workload            Priority + workload balancing dashboard")
     console.print("  /focus               Build/show near-term task list")
     console.print("  /log \"...\"          Append an entry to the decision log")
     console.print("  /documentation       Generate a Word report with artifacts")
@@ -187,6 +191,8 @@ def handle_status_command(args: list):
     table.add_column("Title", style="white")
     table.add_column("Assignee", style="green")
     table.add_column("Due Date", style="yellow")
+    table.add_column("Priority", style="red")
+    table.add_column("Effort", style="cyan", justify="right")
 
     # Status indicators
     status_emoji = {
@@ -202,7 +208,9 @@ def handle_status_command(args: list):
             f"{status_emoji.get(task.status, '[ ]')} {task.status}",
             task.title,
             task.assignee or "Unassigned",
-            task.due_date.isoformat() if task.due_date else "No due date"
+            task.due_date.isoformat() if task.due_date else "No due date",
+            (task.priority or "-").title() if task.priority else "-",
+            f"{task.effort_points:.1f}" if task.effort_points is not None else "-"
         )
 
     console.print(table)
@@ -724,6 +732,150 @@ def render_health_dashboard(days: int = 45, export: bool = True):
         )
 
 
+def render_workload_dashboard(limit: int = 12, export: bool = True):
+    """Show priority ordering and workload/capacity insights."""
+    plan = load_plan()
+    if not plan.tasks:
+        console.print("[yellow]No tasks available. Add tasks before running /workload.[/yellow]")
+        return
+
+    def priority_value(task: Task) -> int:
+        if not task.priority:
+            return 5
+        normalized = task.priority.lower()
+        mapping = {
+            "p0": 0,
+            "critical": 0,
+            "p1": 1,
+            "high": 1,
+            "medium": 2,
+            "p2": 2,
+            "low": 3,
+            "p3": 3,
+        }
+        return mapping.get(normalized, 4)
+
+    def is_high_priority(task: Task) -> bool:
+        return priority_value(task) <= 1
+
+    def due_sort_value(task: Task) -> date:
+        return task.due_date or date.max
+
+    prioritized = sorted(
+        plan.tasks,
+        key=lambda task: (priority_value(task), due_sort_value(task), task.id),
+    )
+
+    table = Table(title="Priority Backlog", header_style="bold cyan")
+    table.add_column("ID", style="cyan", no_wrap=True)
+    table.add_column("Priority", style="red")
+    table.add_column("Status", style="magenta")
+    table.add_column("Task", style="white")
+    table.add_column("Assignee", style="green")
+    table.add_column("Due", style="yellow")
+    table.add_column("Effort", style="cyan", justify="right")
+    table.add_column("Risk", style="magenta")
+
+    for task in prioritized[:limit]:
+        table.add_row(
+            f"#{task.id}",
+            (task.priority or "-").title() if task.priority else "-",
+            task.status,
+            task.title,
+            task.assignee or "Unassigned",
+            task.due_date.isoformat() if task.due_date else "-",
+            f"{task.effort_points:.1f}" if task.effort_points is not None else "-",
+            task.risk_level or "-",
+        )
+    console.print(table)
+    if len(prioritized) > limit:
+        console.print(f"[dim]Showing top {limit} of {len(prioritized)} tasks by priority.[/dim]")
+
+    priority_gaps = [
+        task for task in prioritized
+        if is_high_priority(task) and not task.assignee
+    ]
+    if priority_gaps:
+        gap_lines = [
+            f"- #{task.id} {task.title} (priority {task.priority or 'n/a'}, due {task.due_date or 'n/a'})"
+            for task in priority_gaps[:5]
+        ]
+        if len(priority_gaps) > 5:
+            gap_lines.append(f"... {len(priority_gaps) - 5} more")
+        console.print(Panel("\n".join(gap_lines), title="High priority without owner", border_style="red"))
+
+    workload: Dict[str, Dict[str, float]] = defaultdict(lambda: {"tasks": 0, "effort": 0.0, "high": 0})
+    for task in plan.tasks:
+        owner = task.assignee or "Unassigned"
+        workload[owner]["tasks"] += 1
+        if task.effort_points is not None:
+            workload[owner]["effort"] += float(task.effort_points)
+        if is_high_priority(task):
+            workload[owner]["high"] += 1
+
+    workload_rows = sorted(
+        workload.items(),
+        key=lambda item: (-item[1]["effort"], -item[1]["tasks"], item[0].lower()),
+    )
+    load_table = Table(title="Capacity by Assignee", header_style="bold green")
+    load_table.add_column("Owner", style="green")
+    load_table.add_column("Tasks", justify="right")
+    load_table.add_column("Effort (pts)", justify="right")
+    load_table.add_column("High Priority", justify="right")
+    for owner, stats in workload_rows:
+        effort_val = f"{stats['effort']:.1f}" if stats["effort"] else "-"
+        load_table.add_row(owner, str(stats["tasks"]), effort_val, str(int(stats["high"])))
+    console.print(load_table)
+
+    risk_counts = Counter((task.risk_level or "unspecified").title() for task in plan.tasks)
+    if risk_counts:
+        risk_table = Table(title="Risk Exposure", header_style="bold yellow")
+        risk_table.add_column("Risk Level")
+        risk_table.add_column("Tasks", justify="right")
+        for level, count in risk_counts.most_common():
+            risk_table.add_row(level, str(count))
+        console.print(risk_table)
+
+    okr_counts = Counter(task.okr_alignment for task in plan.tasks if task.okr_alignment)
+    if okr_counts:
+        okr_table = Table(title="OKR Alignment", header_style="bold blue")
+        okr_table.add_column("OKR / Outcome")
+        okr_table.add_column("Tasks", justify="right")
+        for okr, count in okr_counts.most_common():
+            okr_table.add_row(okr, str(count))
+        console.print(okr_table)
+
+    if export:
+        root = get_project_root()
+        timestamp = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
+        artifact_dir = root / "artifacts" / "analysis" / f"workload_{timestamp}"
+        artifact_dir.mkdir(parents=True, exist_ok=True)
+
+        summary = {
+            "generated_at": datetime.utcnow().isoformat(),
+            "priority_backlog": [
+                {
+                    "id": task.id,
+                    "title": task.title,
+                    "priority": task.priority,
+                    "assignee": task.assignee,
+                    "due_date": task.due_date.isoformat() if task.due_date else None,
+                    "effort_points": task.effort_points,
+                    "risk_level": task.risk_level,
+                }
+                for task in prioritized
+            ],
+            "workload": workload,
+            "risk_counts": dict(risk_counts),
+            "okr_counts": dict(okr_counts),
+            "priority_gaps": [task.id for task in priority_gaps],
+        }
+        summary_path = artifact_dir / "workload_summary.json"
+        summary_path.write_text(json.dumps(summary, indent=2))
+        rel_paths = [summary_path.relative_to(root).as_posix()]
+        console.print(Panel("\n".join(f"- {path}" for path in rel_paths), title="Workload artifacts saved", border_style="blue"))
+
+
 def render_focus_board(horizon_days: int = 14, limit: int = 10):
     """Generate and display the near-term focus list."""
     plan = load_plan()
@@ -1012,6 +1164,29 @@ def handle_health_command(args: list):
     render_health_dashboard(days=days, export=export)
 
 
+def handle_workload_command(args: list):
+    """Adapter for the workload dashboard."""
+    limit = 12
+    export = True
+    i = 0
+    while i < len(args):
+        token = args[i]
+        if token == "--limit" and i + 1 < len(args):
+            try:
+                limit = int(args[i + 1])
+            except ValueError:
+                console.print("[red]--limit expects an integer[/red]")
+                return
+            i += 2
+        elif token == "--no-export":
+            export = False
+            i += 1
+        else:
+            i += 1
+
+    render_workload_dashboard(limit=limit, export=export)
+
+
 def handle_focus_command(args: list):
     """Adapter for building/showing the focus list."""
     horizon = 14
@@ -1158,6 +1333,8 @@ def parse_slash_command(user_input: str):
         handle_forecast_command(args)
     elif command == "health":
         handle_health_command(args)
+    elif command == "workload":
+        handle_workload_command(args)
     elif command == "focus":
         handle_focus_command(args)
     elif command == "log":
@@ -1531,6 +1708,15 @@ def health(
 ):
     """Show time-series health dashboard and optional artifacts."""
     render_health_dashboard(days=days, export=export)
+
+
+@app.command()
+def workload(
+    limit: int = typer.Option(12, "--limit", help="How many tasks to show in the top priority table"),
+    export: bool = typer.Option(True, "--export/--no-export", help="Persist workload summary under artifacts/analysis")
+):
+    """Show prioritization/workload overview and optional artifacts."""
+    render_workload_dashboard(limit=limit, export=export)
 
 
 @app.command()

@@ -14,6 +14,7 @@ An intelligent CLI tool for managing projects using AI-powered automation with L
 
 - Critical path and Monte Carlo risk insights
 - Rolling /health dashboard with burndown/burnup, throughput, cycle-time percentiles, and plan-vs-actual histograms
+- Rich task metadata (priority, effort, cost, risk, sprint/OKR, tags) powering smarter focus boards and workload balancing
 - Near-term focus board, artifact vault, and instant documentation export
 - Spreadsheet-friendly `plan.csv` mirror with slash command syncing
 - Automatic decision log entries for every plan change
@@ -183,6 +184,7 @@ pm mobile-app-launch  # Enter REPL in specific project
 - `/risk --iterations 5000` - Monte Carlo schedule risk simulation
 - `/forecast --deadline 2025-03-31 --cost-rate 800 --shock 5` - Advanced Monte Carlo (deadline probability, cost, dependency shocks)
 - `/health --days 45` - Rolling burnup/throughput/cycle-time dashboard (exports charts + summary)
+- `/workload --limit 12` - Prioritization + workload balancing (flags high-priority gaps, exports summary)
 - `/focus --days 14` - Build/save the near-term focus list
 - `/log "message"` - Append structured entries to 04_decisions.log
 - `/documentation` - Generate a Word report inside artifacts/documentation/
@@ -208,6 +210,7 @@ For quick one-off commands without entering the REPL:
 - `pm risk --iterations 5000` - Monte Carlo schedule risk simulation
 - `pm forecast --deadline 2025-03-31 --cost-rate 800 --shock 5` - Advanced Monte Carlo forecast
 - `pm health --days 45 --no-export` - Show health dashboard (optionally skip artifact export)
+- `pm workload --limit 12 --no-export` - Prioritization/workload dashboard (optionally skip artifact export)
 - `pm focus --days 14` - Show/update the near-term focus list
 - `pm log "message" --type decision --task 4` - Append to decision log
 - `pm documentation --output artifacts/documentation/brief.docx` - Generate documentation
@@ -220,6 +223,7 @@ For quick one-off commands without entering the REPL:
 - After editing the CSV, sync it back with `/plan --update-from-csv [optional_csv_path]` or `pm plan --update-from-csv --csv-path my_plan.csv`.
 - The import validates IDs, dependencies, and dates, rewrites the JSON source of truth, and regenerates the Gantt chart so every artifact reflects your spreadsheet edits.
 - Keep the CSV header row intact (`id,title,assignee,...`). Leave cells blank to clear values; list dependencies as comma-separated IDs (e.g., `1,2,5`).
+- Extra optional columns let you define richer context: `priority`, `effort_points`, `cost_estimate`, `risk_level`, `sprint`, `okr_alignment`, `deliverable_type`, and `tags` (semicolon-separated). Use whatever values fit your workflow—unknown strings are preserved, and blanks fall back to defaults.
 
 ### Monte Carlo Forecasting
 - `/risk` runs a quick Monte Carlo simulation that reports P10/P50/P90 finish dates and highlights the top risk drivers.

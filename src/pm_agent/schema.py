@@ -18,6 +18,14 @@ class Task(BaseModel):
     optimistic_days: Optional[int] = None
     likely_days: Optional[int] = None
     pessimistic_days: Optional[int] = None
+    priority: Optional[str] = None  # e.g., critical/high/medium/low
+    effort_points: Optional[float] = None
+    cost_estimate: Optional[float] = None
+    risk_level: Optional[str] = None
+    sprint: Optional[str] = None
+    okr_alignment: Optional[str] = None
+    deliverable_type: Optional[str] = None
+    tags: List[str] = Field(default_factory=list)
 
     class Config:
         json_encoders = {
@@ -56,7 +64,15 @@ class ProjectPlan(BaseModel):
                 "dependencies": task.dependencies,
                 "optimistic_days": task.optimistic_days,
                 "likely_days": task.likely_days,
-                "pessimistic_days": task.pessimistic_days
+                "pessimistic_days": task.pessimistic_days,
+                "priority": task.priority,
+                "effort_points": task.effort_points,
+                "cost_estimate": task.cost_estimate,
+                "risk_level": task.risk_level,
+                "sprint": task.sprint,
+                "okr_alignment": task.okr_alignment,
+                "deliverable_type": task.deliverable_type,
+                "tags": task.tags,
             }
             for task in self.tasks
         ]

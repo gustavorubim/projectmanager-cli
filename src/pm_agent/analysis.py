@@ -440,7 +440,7 @@ def build_focus_board(
     today = date.today()
     items: List[FocusItem] = []
 
-    reason_priority = {"overdue": 0, "blocked": 1, "due_soon": 2}
+    reason_priority = {"overdue": 0, "blocked": 1, "priority_gap": 2, "due_soon": 3}
 
     for task in plan.tasks:
         reason: Optional[str] = None
@@ -454,6 +454,11 @@ def build_focus_board(
                 reason = "due_soon"
         if task.status == "blocked":
             reason = "blocked"
+        priority_flag = False
+        if task.priority:
+            priority_flag = task.priority.lower() in {"p0", "p1", "critical", "high"}
+        if not reason and priority_flag and not task.assignee:
+            reason = "priority_gap"
 
         if reason:
             items.append(

@@ -32,6 +32,14 @@ PLAN_CSV_FIELDS = [
     "optimistic_days",
     "likely_days",
     "pessimistic_days",
+    "priority",
+    "effort_points",
+    "cost_estimate",
+    "risk_level",
+    "sprint",
+    "okr_alignment",
+    "deliverable_type",
+    "tags",
 ]
 
 
@@ -157,7 +165,22 @@ def _summarize_plan_changes(before: ProjectPlan, after: ProjectPlan) -> Optional
         task = before_map[task_id]
         summary_lines.append(f"- Removed #{task.id}: {task.title}")
 
-    fields = ["title", "assignee", "start_date", "due_date", "status", "dependencies"]
+    fields = [
+        "title",
+        "assignee",
+        "start_date",
+        "due_date",
+        "status",
+        "dependencies",
+        "priority",
+        "effort_points",
+        "cost_estimate",
+        "risk_level",
+        "sprint",
+        "okr_alignment",
+        "deliverable_type",
+        "tags",
+    ]
     for task_id in common_ids:
         before_task = before_map[task_id]
         after_task = after_map[task_id]
@@ -230,6 +253,14 @@ def export_plan_to_csv(plan: ProjectPlan, csv_file: Optional[str] = None):
                 "optimistic_days": task.optimistic_days or "",
                 "likely_days": task.likely_days or "",
                 "pessimistic_days": task.pessimistic_days or "",
+                "priority": task.priority or "",
+                "effort_points": task.effort_points if task.effort_points is not None else "",
+                "cost_estimate": task.cost_estimate if task.cost_estimate is not None else "",
+                "risk_level": task.risk_level or "",
+                "sprint": task.sprint or "",
+                "okr_alignment": task.okr_alignment or "",
+                "deliverable_type": task.deliverable_type or "",
+                "tags": ";".join(task.tags) if task.tags else "",
             })
 
 
@@ -266,6 +297,14 @@ def import_plan_from_csv(csv_file: Optional[str] = None) -> ProjectPlan:
             return None
         return int(float(value))
 
+    def parse_float(value: Optional[str]) -> Optional[float]:
+        if value is None:
+            return None
+        value = value.strip()
+        if not value:
+            return None
+        return float(value)
+
     tasks: List[Task] = []
     with open(csv_path, "r", encoding="utf-8", newline="") as handle:
         reader = csv.DictReader(handle)
@@ -299,6 +338,14 @@ def import_plan_from_csv(csv_file: Optional[str] = None) -> ProjectPlan:
                 optimistic_days=parse_int(row.get("optimistic_days")),
                 likely_days=parse_int(row.get("likely_days")),
                 pessimistic_days=parse_int(row.get("pessimistic_days")),
+                priority=(row.get("priority") or "").strip() or None,
+                effort_points=parse_float(row.get("effort_points")),
+                cost_estimate=parse_float(row.get("cost_estimate")),
+                risk_level=(row.get("risk_level") or "").strip() or None,
+                sprint=(row.get("sprint") or "").strip() or None,
+                okr_alignment=(row.get("okr_alignment") or "").strip() or None,
+                deliverable_type=(row.get("deliverable_type") or "").strip() or None,
+                tags=[tag.strip() for tag in (row.get("tags") or "").split(";") if tag.strip()],
             )
             tasks.append(task)
 
