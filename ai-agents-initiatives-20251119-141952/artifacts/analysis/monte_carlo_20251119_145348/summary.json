@@ -1,0 +1,227 @@
+{
+  "parameters": {
+    "iterations": 2000,
+    "cost_rate": null,
+    "deadline": null,
+    "milestone_deadline": null,
+    "milestone_label": null,
+    "shock_days": 0
+  },
+  "results": {
+    "iterations": 2000,
+    "generated_at": "2025-11-19T14:53:48.780385",
+    "project_start": "2025-11-19",
+    "finish_percentiles": {
+      "p10": "2026-11-12",
+      "p50": "2026-12-03",
+      "p90": "2026-12-25"
+    },
+    "duration_percentiles": {
+      "p10": 358.0,
+      "p50": 379.0,
+      "p90": 401.0
+    },
+    "effort_percentiles": {
+      "p10": 1435.0,
+      "p50": 1496.0,
+      "p90": 1555.0
+    },
+    "finish_distribution_stats": {
+      "mean_days": 379.1885,
+      "std_days": 16.712569154681155,
+      "min_days": 322.0,
+      "max_days": 433.0
+    },
+    "probability_on_time": null,
+    "milestone_probability": null,
+    "milestone_label": null,
+    "risk_drivers": [
+      {
+        "task_id": 20,
+        "title": "Performance Tuning",
+        "correlation": 0.8584527735124035,
+        "avg_duration": 64.4175
+      },
+      {
+        "task_id": 19,
+        "title": "Enterprise Rollout",
+        "correlation": 0.858410623966804,
+        "avg_duration": 64.3945
+      },
+      {
+        "task_id": 21,
+        "title": "Steady-State Operations Handoff",
+        "correlation": 0.8518924902127191,
+        "avg_duration": 64.148
+      },
+      {
+        "task_id": 16,
+        "title": "Compliance Agent & Audit Reporting",
+        "correlation": 0.7333130512425825,
+        "avg_duration": 63.952
+      },
+      {
+        "task_id": 17,
+        "title": "Governance Sign-Offs",
+        "correlation": 0.7266744139534195,
+        "avg_duration": 63.982
+      },
+      {
+        "task_id": 18,
+        "title": "Self-Service Workflow Builder GA",
+        "correlation": 0.716626439266428,
+        "avg_duration": 64.0005
+      },
+      {
+        "task_id": 14,
+        "title": "Enablement and Training Sessions",
+        "correlation": 0.5620200036096953,
+        "avg_duration": 63.7715
+      },
+      {
+        "task_id": 13,
+        "title": "Finance & Marketing Playbooks Deployment",
+        "correlation": 0.5576150594135593,
+        "avg_duration": 64.3575
+      },
+      {
+        "task_id": 15,
+        "title": "Adoption Dashboards Development",
+        "correlation": 0.5476253159290209,
+        "avg_duration": 63.5605
+      },
+      {
+        "task_id": 9,
+        "title": "Infra Ops Buddy Playbook Development",
+        "correlation": 0.39962557945537036,
+        "avg_duration": 61.904
+      },
+      {
+        "task_id": 28,
+        "title": "Implement On-Call API Hooks for Infra Ops Playbook",
+        "correlation": 0.39042926416487095,
+        "avg_duration": 15.0025
+      },
+      {
+        "task_id": 27,
+        "title": "Develop SRE Workflows for Infra Ops Playbook",
+        "correlation": 0.38587575610371094,
+        "avg_duration": 14.9925
+      },
+      {
+        "task_id": 12,
+        "title": "SOC2 Logging Implementation",
+        "correlation": 0.36999139732005726,
+        "avg_duration": 62.1705
+      },
+      {
+        "task_id": 11,
+        "title": "Red-Team Exercises",
+        "correlation": 0.3653687243245539,
+        "avg_duration": 62.071
+      },
+      {
+        "task_id": 10,
+        "title": "Finance Quote-to-Cash Co-Pilot Development",
+        "correlation": 0.36275908047590794,
+        "avg_duration": 62.2085
+      },
+      {
+        "task_id": 8,
+        "title": "Support L1 Triage Playbook Development",
+        "correlation": 0.35973309035586826,
+        "avg_duration": 61.713
+      },
+      {
+        "task_id": 26,
+        "title": "Clean Up Knowledge Base for Support Playbook",
+        "correlation": 0.3588184988105815,
+        "avg_duration": 14.94
+      },
+      {
+        "task_id": 29,
+        "title": "Modernize ERP API for Finance Playbook",
+        "correlation": 0.353424448901297,
+        "avg_duration": 15.0225
+      },
+      {
+        "task_id": 25,
+        "title": "Develop ITSM Connector for Support Playbook",
+        "correlation": 0.3489676200161005,
+        "avg_duration": 15.052
+      },
+      {
+        "task_id": 31,
+        "title": "Develop SOC2-Ready Logging System",
+        "correlation": 0.3393684854424552,
+        "avg_duration": 44.831
+      },
+      {
+        "task_id": 30,
+        "title": "Conduct Legal/Privacy Review for Model Risk Framework",
+        "correlation": 0.31224884655500956,
+        "avg_duration": 44.8445
+      },
+      {
+        "task_id": 4,
+        "title": "Agent Fabric MVP Development",
+        "correlation": 0.21004692468932293,
+        "avg_duration": 62.9585
+      },
+      {
+        "task_id": 22,
+        "title": "Develop Agent Fabric Orchestration Layer",
+        "correlation": 0.2071795356322114,
+        "avg_duration": 45.6395
+      },
+      {
+        "task_id": 5,
+        "title": "IAM Integration",
+        "correlation": 0.19780446671857785,
+        "avg_duration": 62.512
+      },
+      {
+        "task_id": 6,
+        "title": "Observability Baseline Setup",
+        "correlation": 0.19522433208187928,
+        "avg_duration": 62.7755
+      },
+      {
+        "task_id": 7,
+        "title": "Initial Connectors Development",
+        "correlation": 0.18271850446495028,
+        "avg_duration": 62.773
+      },
+      {
+        "task_id": 23,
+        "title": "Implement Identity-Aware Policy Engine",
+        "correlation": 0.13603411986230454,
+        "avg_duration": 62.5435
+      },
+      {
+        "task_id": 2,
+        "title": "Team Staffing and Onboarding",
+        "correlation": 0.09534438919415798,
+        "avg_duration": 7.354
+      },
+      {
+        "task_id": 3,
+        "title": "GPU Capacity Reservation",
+        "correlation": 0.05290103632411014,
+        "avg_duration": 7.3575
+      },
+      {
+        "task_id": 1,
+        "title": "Charter Approval and Funding Secured",
+        "correlation": 0.048373490245276464,
+        "avg_duration": 7.322
+      },
+      {
+        "task_id": 24,
+        "title": "Setup Prompt Evaluation Lab",
+        "correlation": -0.0036243313434966297,
+        "avg_duration": 62.88
+      }
+    ]
+  }
+}

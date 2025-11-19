@@ -32,7 +32,7 @@ uv venv && source .venv/bin/activate  # macOS/Linux
 uv pip install -e .
 
 # Configure
-cp .env.example .env  # Then add your OPENAI_API_KEY
+cp .env.example .env  # Then add your GOOGLE_API_KEY (Gemini)
 
 # Start using
 pm new my-project
@@ -79,7 +79,7 @@ source .venv/bin/activate
 uv pip install -e .
 ```
 
-3. **Set up your OpenAI API key**
+3. **Configure Gemini API access**
 ```bash
 # On macOS/Linux:
 cp .env.example .env
@@ -87,8 +87,10 @@ cp .env.example .env
 # On Windows:
 copy .env.example .env
 
-# Edit .env and add your OpenAI API key
-# OPENAI_API_KEY=sk-your-key-here
+# Edit .env and add your Google AI Studio key
+# GOOGLE_API_KEY=your-gemini-api-key
+# Optional overrides:
+# GEMINI_MODEL=gemini-2.5-flash
 ```
 
 ### Alternative: Setup with pip
@@ -306,7 +308,8 @@ Run `/documentation` (or `pm documentation`) at any time to collect the charter,
 
 ## Environment Variables
 
-- `OPENAI_API_KEY` - Your OpenAI API key (required)
+- `GOOGLE_API_KEY` - Gemini API key from Google AI Studio (required)
+- `GEMINI_MODEL` - Override the default `gemini-2.5-flash` model if desired
 - `EDITOR` - Preferred text editor for `pm plan --edit` (default: notepad/nano)
 - `PM_NO_ANIMATION` - Set to `1` to disable startup animation for instant launch
 
@@ -322,7 +325,7 @@ Run `/documentation` (or `pm documentation`) at any time to collect the charter,
 
 Built with:
 - **LangGraph** - Agent orchestration and state management
-- **GPT-4** - Language model (gpt-4o)
+- **Google Gemini API (e.g., gemini-2.5-flash)** - Language model backend
 - **Typer** - CLI framework
 - **Rich** - Terminal UI
 - **Matplotlib** - Gantt chart generation
@@ -331,25 +334,23 @@ Built with:
 ## Security & Privacy
 
 - All project files stay local on your machine
-- Only text prompts are sent to OpenAI API
+- Only text prompts are sent to the Google Gemini API
 - Conversation history stored in `.pm/state.sqlite`
 - Delete `.pm/` folder to clear memory while keeping project files
 
 ## Troubleshooting
 
-### "OpenAIError: The api_key client option must be set"
-This means your OpenAI API key is not configured:
+### "Permission denied" or "API key missing" errors
+This means your Gemini API key isn't configured correctly:
 
-1. **Check if `.env` file exists** in the project root (where `pyproject.toml` is)
-2. **Create it from the example**:
-   ```bash
-   cp .env.example .env  # or 'copy' on Windows
+1. **Check if `.env` exists** in the project root and defines `GOOGLE_API_KEY`
+2. **Verify the key** by running a simple script:
+   ```python
+   from google import genai
+   client = genai.Client(api_key="YOUR_KEY")
+   print(client.models.generate_content(model="gemini-2.5-flash", contents="hi").text)
    ```
-3. **Edit `.env` and add your key**:
-   ```
-   OPENAI_API_KEY=sk-your-actual-key-here
-   ```
-4. **Restart your terminal** or reactivate your virtual environment
+3. **Reactivate your virtual environment** (or restart shell) after editing `.env`
 
 ### "No module named 'pm_agent'"
 Make sure you:

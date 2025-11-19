@@ -178,7 +178,7 @@ alias pm="python3 /path/to/pm-agent/src/cli.py"
 
 ### 6.3 Security & Privacy Check
 - Files: All stay in the folder.
-- API: Only text (prompts) is sent to OpenAI/Anthropic.
+- API: Only text (prompts) is sent to the Google Gemini API.
 - Memory: Stored in `.pm/state.sqlite`. Deleting the `.pm` folder clears conversation history while keeping project files safe.
 
 ## Implementation Checklist
@@ -188,6 +188,4 @@ alias pm="python3 /path/to/pm-agent/src/cli.py"
 4. Test `pm new` to ensure folder creation works.
 5. Test `pm chat` and verify `01_plan.json` updates when you tell the agent to add tasks.
 6. Test `pm plan --edit` and verify the Gantt chart auto-regenerates.
-
-
 

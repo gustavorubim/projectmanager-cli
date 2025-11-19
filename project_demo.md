@@ -28,11 +28,13 @@ Before starting, ensure you have:
    uv pip install -e .
    ```
 
-3. **Configure your OpenAI API key**:
-   ```bash
-   cp .env.example .env  # or 'copy' on Windows
-   # Edit .env and add: OPENAI_API_KEY=sk-...
-   ```
+3. **Configure Gemini API access**:
+```bash
+cp .env.example .env  # or 'copy' on Windows
+# Edit .env and set:
+# GOOGLE_API_KEY=your-gemini-api-key
+# Optional: GEMINI_MODEL=gemini-2.5-flash
+```
 
 > **Note:** If you prefer pip over UV, that's fine too! Just use `pip install -e .` instead of `uv pip install -e .`
 
@@ -655,7 +657,7 @@ mobile-app-launch/
 
 **Problem:** Agent isn't responding
 
-**Solution:** Check your `.env` file has valid `OPENAI_API_KEY`
+**Solution:** Verify `.env` defines `GOOGLE_API_KEY` (Gemini key from AI Studio) and that it's valid
 
 ---
 

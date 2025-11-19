@@ -122,6 +122,18 @@ def ensure_project_files():
     pm_dir.mkdir(exist_ok=True)
 
 
+def _parse_iso_date(label: str, value: Optional[str]) -> Optional[date]:
+    """Parse ISO date strings with friendly errors."""
+    if not value:
+        return None
+    try:
+        return date.fromisoformat(value)
+    except ValueError as exc:
+        raise ValueError(
+            f"Invalid {label} date '{value}'. Use YYYY-MM-DD and ensure the date exists."
+        ) from exc
+
+
 def _plan_from_data(data: List[dict]) -> ProjectPlan:
     """Create a ProjectPlan instance from JSON-compatible list."""
     tasks = []
@@ -447,12 +459,18 @@ def add_task(
 
     task_id = plan.get_next_id()
 
+    try:
+        parsed_start = _parse_iso_date("start", start_date)
+        parsed_due = _parse_iso_date("due", due_date)
+    except ValueError as exc:
+        return f"Error: {exc}"
+
     task = Task(
         id=task_id,
         title=title,
         assignee=assignee,
-        start_date=date.fromisoformat(start_date) if start_date else None,
-        due_date=date.fromisoformat(due_date) if due_date else None,
+        start_date=parsed_start,
+        due_date=parsed_due,
         status=status,
         dependencies=dependencies or []
     )
@@ -501,10 +519,13 @@ def update_task(
         task.title = title
     if assignee is not None:
         task.assignee = assignee
-    if start_date is not None:
-        task.start_date = date.fromisoformat(start_date)
-    if due_date is not None:
-        task.due_date = date.fromisoformat(due_date)
+    try:
+        if start_date is not None:
+            task.start_date = _parse_iso_date("start", start_date)
+        if due_date is not None:
+            task.due_date = _parse_iso_date("due", due_date)
+    except ValueError as exc:
+        return f"Error: {exc}"
     if status is not None:
         task.status = status
     if dependencies is not None:

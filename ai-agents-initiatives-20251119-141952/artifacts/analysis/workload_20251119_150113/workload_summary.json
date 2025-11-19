@@ -1,0 +1,798 @@
+{
+  "generated_at": "2025-11-19T15:01:13.503711",
+  "priority_backlog": [
+    {
+      "id": 1,
+      "title": "Charter Approval and Funding Secured",
+      "priority": null,
+      "assignee": "Program Leadership & PMO",
+      "due_date": "2025-11-26",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 72,
+      "title": "Weekly PMO Updates",
+      "priority": null,
+      "assignee": "Program Leadership & PMO",
+      "due_date": "2025-11-26",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 2,
+      "title": "Team Staffing and Onboarding",
+      "priority": null,
+      "assignee": "Program Leadership & PMO",
+      "due_date": "2025-12-03",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 3,
+      "title": "GPU Capacity Reservation",
+      "priority": null,
+      "assignee": "AI Platform Engineering",
+      "due_date": "2025-12-03",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 73,
+      "title": "Bi-weekly Steering Committee Meetings",
+      "priority": null,
+      "assignee": "Program Leadership & PMO",
+      "due_date": "2025-12-03",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 75,
+      "title": "Ongoing Risk Monitoring and Mitigation Planning",
+      "priority": null,
+      "assignee": "Program Leadership & PMO",
+      "due_date": "2025-12-03",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 74,
+      "title": "Monthly All-Hands Demo & KPI Review",
+      "priority": null,
+      "assignee": "Program Leadership & PMO",
+      "due_date": "2025-12-19",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 22,
+      "title": "Develop Agent Fabric Orchestration Layer",
+      "priority": null,
+      "assignee": "AI Platform Engineering",
+      "due_date": "2026-01-15",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 4,
+      "title": "Agent Fabric MVP Development",
+      "priority": null,
+      "assignee": "AI Platform Engineering",
+      "due_date": "2026-01-31",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 5,
+      "title": "IAM Integration",
+      "priority": null,
+      "assignee": "Security, Risk & Compliance",
+      "due_date": "2026-01-31",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 6,
+      "title": "Observability Baseline Setup",
+      "priority": null,
+      "assignee": "AI Platform Engineering",
+      "due_date": "2026-01-31",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 7,
+      "title": "Initial Connectors Development",
+      "priority": null,
+      "assignee": "AI Platform Engineering",
+      "due_date": "2026-01-31",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 23,
+      "title": "Implement Identity-Aware Policy Engine",
+      "priority": null,
+      "assignee": "Security, Risk & Compliance",
+      "due_date": "2026-01-31",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 24,
+      "title": "Setup Prompt Evaluation Lab",
+      "priority": null,
+      "assignee": "Applied Research / Prompt Ops",
+      "due_date": "2026-01-31",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 67,
+      "title": "Identify and Onboard Adoption Champion Network",
+      "priority": null,
+      "assignee": "Enablement & Training",
+      "due_date": "2026-01-31",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 25,
+      "title": "Develop ITSM Connector for Support Playbook",
+      "priority": null,
+      "assignee": "Domain Squads",
+      "due_date": "2026-02-15",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 26,
+      "title": "Clean Up Knowledge Base for Support Playbook",
+      "priority": null,
+      "assignee": "Domain Squads",
+      "due_date": "2026-02-15",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 27,
+      "title": "Develop SRE Workflows for Infra Ops Playbook",
+      "priority": null,
+      "assignee": "Domain Squads",
+      "due_date": "2026-02-15",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 28,
+      "title": "Implement On-Call API Hooks for Infra Ops Playbook",
+      "priority": null,
+      "assignee": "Domain Squads",
+      "due_date": "2026-02-15",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 29,
+      "title": "Modernize ERP API for Finance Playbook",
+      "priority": null,
+      "assignee": "Domain Squads",
+      "due_date": "2026-02-15",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 34,
+      "title": "Support L1 Triage Playbook Requirements Gathering",
+      "priority": null,
+      "assignee": "Domain Squads",
+      "due_date": "2026-02-15",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 39,
+      "title": "Infra Ops Buddy Playbook Requirements Gathering",
+      "priority": null,
+      "assignee": "Domain Squads",
+      "due_date": "2026-02-15",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 44,
+      "title": "Finance Quote-to-Cash Playbook Requirements Gathering",
+      "priority": null,
+      "assignee": "Domain Squads",
+      "due_date": "2026-02-15",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 59,
+      "title": "CRM Connector Development",
+      "priority": null,
+      "assignee": "AI Platform Engineering",
+      "due_date": "2026-02-15",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 60,
+      "title": "Code Repository Connector Development",
+      "priority": null,
+      "assignee": "AI Platform Engineering",
+      "due_date": "2026-02-15",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 61,
+      "title": "Knowledge Base Connector Development",
+      "priority": null,
+      "assignee": "AI Platform Engineering",
+      "due_date": "2026-02-15",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 68,
+      "title": "Define Observability Requirements & KPIs",
+      "priority": null,
+      "assignee": "AI Platform Engineering",
+      "due_date": "2026-02-15",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 76,
+      "title": "Support L1 Triage Agent Design & Architecture",
+      "priority": null,
+      "assignee": "Applied Research / Prompt Ops",
+      "due_date": "2026-02-28",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 77,
+      "title": "Infra Ops Buddy Agent Design & Architecture",
+      "priority": null,
+      "assignee": "Applied Research / Prompt Ops",
+      "due_date": "2026-02-28",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 78,
+      "title": "Finance Quote-to-Cash Agent Design & Architecture",
+      "priority": null,
+      "assignee": "Applied Research / Prompt Ops",
+      "due_date": "2026-02-28",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 79,
+      "title": "Secure Data Ingestion Pipeline Setup",
+      "priority": null,
+      "assignee": "AI Platform Engineering",
+      "due_date": "2026-02-28",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 80,
+      "title": "Define Red-Team Audit Scope and Criteria",
+      "priority": null,
+      "assignee": "Security, Risk & Compliance",
+      "due_date": "2026-02-28",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 81,
+      "title": "Define Agent Guardrail Policies",
+      "priority": null,
+      "assignee": "Security, Risk & Compliance",
+      "due_date": "2026-02-28",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 82,
+      "title": "Schedule and Conduct Adoption Office Hours",
+      "priority": null,
+      "assignee": "Enablement & Training",
+      "due_date": "2026-02-28",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 83,
+      "title": "Establish Knowledge Transfer & Enablement Loops",
+      "priority": null,
+      "assignee": "Enablement & Training",
+      "due_date": "2026-02-28",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 84,
+      "title": "Implement KPI Tracking Mechanisms (Automation Rate, SLA, NPS)",
+      "priority": null,
+      "assignee": "Program Leadership & PMO",
+      "due_date": "2026-02-28",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 62,
+      "title": "Develop Model Risk Framework",
+      "priority": null,
+      "assignee": "Security, Risk & Compliance",
+      "due_date": "2026-03-01",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 30,
+      "title": "Conduct Legal/Privacy Review for Model Risk Framework",
+      "priority": null,
+      "assignee": "Security, Risk & Compliance",
+      "due_date": "2026-03-15",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 31,
+      "title": "Develop SOC2-Ready Logging System",
+      "priority": null,
+      "assignee": "AI Platform Engineering",
+      "due_date": "2026-03-15",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 35,
+      "title": "Support L1 Triage Data Prep & Agent Training",
+      "priority": null,
+      "assignee": "Domain Squads",
+      "due_date": "2026-03-15",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 40,
+      "title": "Infra Ops Buddy Data Prep & Agent Training",
+      "priority": null,
+      "assignee": "Domain Squads",
+      "due_date": "2026-03-15",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 45,
+      "title": "Finance Quote-to-Cash Data Prep & Agent Training",
+      "priority": null,
+      "assignee": "Domain Squads",
+      "due_date": "2026-03-15",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 63,
+      "title": "Develop Policy Enforcement Mechanisms",
+      "priority": null,
+      "assignee": "AI Platform Engineering",
+      "due_date": "2026-03-15",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 69,
+      "title": "Integrate Agent-Specific Monitoring Tools",
+      "priority": null,
+      "assignee": "AI Platform Engineering",
+      "due_date": "2026-03-15",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 36,
+      "title": "Support L1 Triage Unit & Integration Testing",
+      "priority": null,
+      "assignee": "AI Platform Engineering",
+      "due_date": "2026-03-22",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 41,
+      "title": "Infra Ops Buddy Unit & Integration Testing",
+      "priority": null,
+      "assignee": "AI Platform Engineering",
+      "due_date": "2026-03-22",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 46,
+      "title": "Finance Quote-to-Cash Unit & Integration Testing",
+      "priority": null,
+      "assignee": "AI Platform Engineering",
+      "due_date": "2026-03-22",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 8,
+      "title": "Support L1 Triage Playbook Development",
+      "priority": null,
+      "assignee": "Domain Squads",
+      "due_date": "2026-03-31",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 9,
+      "title": "Infra Ops Buddy Playbook Development",
+      "priority": null,
+      "assignee": "Domain Squads",
+      "due_date": "2026-03-31",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 10,
+      "title": "Finance Quote-to-Cash Co-Pilot Development",
+      "priority": null,
+      "assignee": "Domain Squads",
+      "due_date": "2026-03-31",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 11,
+      "title": "Red-Team Exercises",
+      "priority": null,
+      "assignee": "Security, Risk & Compliance",
+      "due_date": "2026-03-31",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 12,
+      "title": "SOC2 Logging Implementation",
+      "priority": null,
+      "assignee": "Security, Risk & Compliance",
+      "due_date": "2026-03-31",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 37,
+      "title": "Support L1 Triage UAT & Pilot Deployment",
+      "priority": null,
+      "assignee": "Domain Squads",
+      "due_date": "2026-03-31",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 42,
+      "title": "Infra Ops Buddy UAT & Pilot Deployment",
+      "priority": null,
+      "assignee": "Domain Squads",
+      "due_date": "2026-03-31",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 47,
+      "title": "Finance Quote-to-Cash UAT & Pilot Deployment",
+      "priority": null,
+      "assignee": "Domain Squads",
+      "due_date": "2026-03-31",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 70,
+      "title": "Develop Performance & Usage Dashboards",
+      "priority": null,
+      "assignee": "AI Platform Engineering",
+      "due_date": "2026-03-31",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 71,
+      "title": "Regular KPI Reporting & Review Cycles",
+      "priority": null,
+      "assignee": "Program Leadership & PMO",
+      "due_date": "2026-03-31",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 38,
+      "title": "Support L1 Triage Initial Monitoring & Iteration",
+      "priority": null,
+      "assignee": "Domain Squads",
+      "due_date": "2026-04-15",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 43,
+      "title": "Infra Ops Buddy Initial Monitoring & Iteration",
+      "priority": null,
+      "assignee": "Domain Squads",
+      "due_date": "2026-04-15",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 48,
+      "title": "Finance Quote-to-Cash Initial Monitoring & Iteration",
+      "priority": null,
+      "assignee": "Domain Squads",
+      "due_date": "2026-04-15",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 49,
+      "title": "HR Workflow Automation Playbook Requirements Gathering",
+      "priority": null,
+      "assignee": "Domain Squads",
+      "due_date": "2026-04-15",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 54,
+      "title": "Marketing Ops Co-Pilot Playbook Requirements Gathering",
+      "priority": null,
+      "assignee": "Domain Squads",
+      "due_date": "2026-04-15",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 50,
+      "title": "HR Workflow Automation Agent Design & Architecture",
+      "priority": null,
+      "assignee": "Applied Research / Prompt Ops",
+      "due_date": "2026-04-29",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 55,
+      "title": "Marketing Ops Co-Pilot Agent Design & Architecture",
+      "priority": null,
+      "assignee": "Applied Research / Prompt Ops",
+      "due_date": "2026-04-29",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 64,
+      "title": "Develop Training Modules for Support Function",
+      "priority": null,
+      "assignee": "Enablement & Training",
+      "due_date": "2026-04-30",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 65,
+      "title": "Develop Training Modules for Infra Ops Function",
+      "priority": null,
+      "assignee": "Enablement & Training",
+      "due_date": "2026-04-30",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 66,
+      "title": "Develop Training Modules for Finance Function",
+      "priority": null,
+      "assignee": "Enablement & Training",
+      "due_date": "2026-04-30",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 51,
+      "title": "HR Workflow Automation Data Prep & Agent Training",
+      "priority": null,
+      "assignee": "Domain Squads",
+      "due_date": "2026-05-15",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 56,
+      "title": "Marketing Ops Co-Pilot Data Prep & Agent Training",
+      "priority": null,
+      "assignee": "Domain Squads",
+      "due_date": "2026-05-15",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 52,
+      "title": "HR Workflow Automation Unit & Integration Testing",
+      "priority": null,
+      "assignee": "AI Platform Engineering",
+      "due_date": "2026-05-22",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 57,
+      "title": "Marketing Ops Co-Pilot Unit & Integration Testing",
+      "priority": null,
+      "assignee": "AI Platform Engineering",
+      "due_date": "2026-05-22",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 13,
+      "title": "Finance & Marketing Playbooks Deployment",
+      "priority": null,
+      "assignee": "Domain Squads",
+      "due_date": "2026-05-31",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 14,
+      "title": "Enablement and Training Sessions",
+      "priority": null,
+      "assignee": "Enablement & Training",
+      "due_date": "2026-05-31",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 15,
+      "title": "Adoption Dashboards Development",
+      "priority": null,
+      "assignee": "Enablement & Training",
+      "due_date": "2026-05-31",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 32,
+      "title": "HR Workflow Automation Playbook Development",
+      "priority": null,
+      "assignee": "Domain Squads",
+      "due_date": "2026-05-31",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 33,
+      "title": "Marketing Ops Co-Pilot Playbook Development",
+      "priority": null,
+      "assignee": "Domain Squads",
+      "due_date": "2026-05-31",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 53,
+      "title": "HR Workflow Automation UAT & Pilot Deployment",
+      "priority": null,
+      "assignee": "Domain Squads",
+      "due_date": "2026-05-31",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 58,
+      "title": "Marketing Ops Co-Pilot UAT & Pilot Deployment",
+      "priority": null,
+      "assignee": "Domain Squads",
+      "due_date": "2026-05-31",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 16,
+      "title": "Compliance Agent & Audit Reporting",
+      "priority": null,
+      "assignee": "Security, Risk & Compliance",
+      "due_date": "2026-07-31",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 17,
+      "title": "Governance Sign-Offs",
+      "priority": null,
+      "assignee": "Security, Risk & Compliance",
+      "due_date": "2026-07-31",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 18,
+      "title": "Self-Service Workflow Builder GA",
+      "priority": null,
+      "assignee": "AI Platform Engineering",
+      "due_date": "2026-07-31",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 19,
+      "title": "Enterprise Rollout",
+      "priority": null,
+      "assignee": "Program Leadership & PMO",
+      "due_date": "2026-09-30",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 20,
+      "title": "Performance Tuning",
+      "priority": null,
+      "assignee": "AI Platform Engineering",
+      "due_date": "2026-09-30",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 21,
+      "title": "Steady-State Operations Handoff",
+      "priority": null,
+      "assignee": "Program Leadership & PMO",
+      "due_date": "2026-09-30",
+      "effort_points": null,
+      "risk_level": null
+    }
+  ],
+  "workload": {
+    "Program Leadership & PMO": {
+      "tasks": 10,
+      "effort": 0.0,
+      "high": 0
+    },
+    "AI Platform Engineering": {
+      "tasks": 21,
+      "effort": 0.0,
+      "high": 0
+    },
+    "Security, Risk & Compliance": {
+      "tasks": 10,
+      "effort": 0.0,
+      "high": 0
+    },
+    "Domain Squads": {
+      "tasks": 29,
+      "effort": 0.0,
+      "high": 0
+    },
+    "Enablement & Training": {
+      "tasks": 8,
+      "effort": 0.0,
+      "high": 0
+    },
+    "Applied Research / Prompt Ops": {
+      "tasks": 6,
+      "effort": 0.0,
+      "high": 0
+    }
+  },
+  "risk_counts": {
+    "Unspecified": 84
+  },
+  "okr_counts": {},
+  "priority_gaps": []
+}

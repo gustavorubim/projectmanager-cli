@@ -3,12 +3,13 @@
 import os
 import sqlite3
 from pathlib import Path
-from typing import Literal
+from typing import Literal, Optional
+
 from dotenv import load_dotenv
-from langchain_core.messages import SystemMessage, ToolMessage
-from langchain_openai import ChatOpenAI
-from langgraph.graph import MessagesState, StateGraph, END
+from langchain_core.messages import AIMessage, BaseMessage, SystemMessage, ToolMessage
+from langchain_google_genai import ChatGoogleGenerativeAI
 from langgraph.checkpoint.sqlite import SqliteSaver
+from langgraph.graph import END, MessagesState, StateGraph
 
 from .tools import TOOLS, get_project_root
 
@@ -49,30 +50,87 @@ Remember: You're helping manage real projects. Be accurate, thoughtful, and help
 """
 
 
-def create_agent(model: str = "gpt-4o", temperature: float = 0.1):
+def create_agent(
+    model: Optional[str] = None,
+    temperature: float = 0.1,
+    *,
+    api_key: Optional[str] = None,
+):
     """Create the LangGraph agent.
 
     Args:
-        model: The OpenAI model to use (default: gpt-4o)
+        model: The Gemini model to use (default: gemini-2.5-flash)
         temperature: Temperature for the model (default: 0.1 for consistency)
+        api_key: Optional Google AI Studio API key override
 
     Returns:
         Compiled LangGraph agent
     """
-    # Initialize the LLM with tools
-    llm = ChatOpenAI(model=model, temperature=temperature)
+    model_name = model or os.getenv("GEMINI_MODEL") or "gemini-2.5-flash"
+    api_key = api_key or os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
+
+    if api_key:
+        llm = ChatGoogleGenerativeAI(
+            model=model_name,
+            temperature=temperature,
+            google_api_key=api_key,
+        )
+    else:
+        llm = ChatGoogleGenerativeAI(
+            model=model_name,
+            temperature=temperature,
+        )
     llm_with_tools = llm.bind_tools(TOOLS)
+
+    def _stringify_content(content) -> str:
+        """Convert Gemini content parts into a plain string."""
+        if isinstance(content, str):
+            return content
+
+        parts: list[str] = []
+        if isinstance(content, list):
+            for item in content:
+                if isinstance(item, str):
+                    parts.append(item)
+                elif isinstance(item, dict):
+                    text = item.get("text") or item.get("content")
+                    if isinstance(text, str):
+                        parts.append(text)
+                else:
+                    parts.append(str(item))
+        elif content is not None:
+            parts.append(str(content))
+
+        return "\n\n".join(part for part in parts if part) if parts else ""
+
+    def _ensure_text_message(message: BaseMessage) -> BaseMessage:
+        """Make sure every message has string content."""
+        new_content = _stringify_content(message.content)
+        if new_content == message.content:
+            return message
+        if hasattr(message, "model_copy"):
+            return message.model_copy(update={"content": new_content})
+        data = message.__dict__.copy()
+        data["content"] = new_content
+        return message.__class__(**data)
+
+    def _normalize_ai_response(message: AIMessage) -> AIMessage:
+        """Gemini can return list-based content; flatten to plain text for memory."""
+        normalized = _ensure_text_message(message)
+        return normalized
 
     # Define the agent reasoning node
     def call_model(state: MessagesState):
         """Call the LLM with the current state."""
-        messages = state["messages"]
+        messages = [_ensure_text_message(msg) for msg in state["messages"]]
 
         # Add system message if not present
         if not any(isinstance(msg, SystemMessage) for msg in messages):
             messages = [SystemMessage(content=SYSTEM_PROMPT)] + messages
 
         response = llm_with_tools.invoke(messages)
+        if isinstance(response, AIMessage):
+            response = _normalize_ai_response(response)
         return {"messages": [response]}
 
     # Define tool execution node
@@ -94,7 +152,7 @@ def create_agent(model: str = "gpt-4o", temperature: float = 0.1):
         # Ensure we respond to every tool call, even if something goes wrong
         for tool_call in tool_calls:
             try:
-                # LangChain/OpenAI may return dicts or objects; support both
+                # LangChain providers may return dicts or objects; support both
                 tool_call_id = getattr(tool_call, "id", None) or tool_call.get("id")
                 tool_name = (
                     getattr(tool_call, "name", None)

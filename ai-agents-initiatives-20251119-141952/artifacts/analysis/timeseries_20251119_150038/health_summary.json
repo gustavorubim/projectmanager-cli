@@ -1,0 +1,28 @@
+{
+  "generated_at": "2025-11-19T15:00:38.489976",
+  "window_days": 45,
+  "history_points": 5,
+  "latest_snapshot": "2025-11-19T14:59:37.448819",
+  "burnup": [
+    {
+      "date": "2025-11-19",
+      "done": 0,
+      "total": 84,
+      "remaining": 84,
+      "blocked": 0
+    }
+  ],
+  "throughput": [],
+  "cycle_time": {
+    "count": 0,
+    "mean": null,
+    "percentiles": {},
+    "samples": []
+  },
+  "slip": {
+    "on_time": 0,
+    "late": 0,
+    "records": [],
+    "percentiles": {}
+  }
+}
