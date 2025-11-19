@@ -1,5 +1,5 @@
 {
-  "generated_at": "2025-11-19T01:22:22.894171",
+  "generated_at": "2025-11-19T12:47:56.557005",
   "horizon_days": 14,
   "max_items": 10,
   "items": [
@@ -9,16 +9,16 @@
       "due_date": "2025-11-18",
       "status": "todo",
       "assignee": "Douglas",
-      "days_remaining": 0,
-      "reason": "due_soon"
+      "days_remaining": -1,
+      "reason": "overdue"
     },
     {
       "task_id": 2,
       "title": "Define Project Objectives",
       "due_date": "2025-11-25",
       "status": "todo",
-      "assignee": null,
-      "days_remaining": 7,
+      "assignee": "Sarah Chen",
+      "days_remaining": 6,
       "reason": "due_soon"
     },
     {
@@ -26,8 +26,8 @@
       "title": "Identify Key Stakeholders",
       "due_date": "2025-12-02",
       "status": "todo",
-      "assignee": null,
-      "days_remaining": 14,
+      "assignee": "Sarah Chen",
+      "days_remaining": 13,
       "reason": "due_soon"
     }
   ]

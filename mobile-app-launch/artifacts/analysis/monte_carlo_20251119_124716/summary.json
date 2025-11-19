@@ -1,0 +1,161 @@
+{
+  "parameters": {
+    "iterations": 2000,
+    "cost_rate": null,
+    "deadline": null,
+    "milestone_deadline": null,
+    "milestone_label": null,
+    "shock_days": 0
+  },
+  "results": {
+    "iterations": 2000,
+    "generated_at": "2025-11-19T12:47:16.272830",
+    "project_start": "2025-11-11",
+    "finish_percentiles": {
+      "p10": "2025-12-09",
+      "p50": "2025-12-15",
+      "p90": "2025-12-20"
+    },
+    "duration_percentiles": {
+      "p10": 28.0,
+      "p50": 34.0,
+      "p90": 39.0
+    },
+    "effort_percentiles": {
+      "p10": 183.0,
+      "p50": 193.0,
+      "p90": 203.0
+    },
+    "finish_distribution_stats": {
+      "mean_days": 33.7285,
+      "std_days": 4.145936293528882,
+      "min_days": 22.0,
+      "max_days": 45.0
+    },
+    "probability_on_time": null,
+    "milestone_probability": null,
+    "milestone_label": null,
+    "risk_drivers": [
+      {
+        "task_id": 20,
+        "title": "API Development",
+        "correlation": 0.7753666815576354,
+        "avg_duration": 31.8975
+      },
+      {
+        "task_id": 9,
+        "title": "Develop Core Features",
+        "correlation": 0.43036677739633544,
+        "avg_duration": 29.92
+      },
+      {
+        "task_id": 19,
+        "title": "Analyze App Performance Metrics",
+        "correlation": -0.03279599223171272,
+        "avg_duration": 7.3545
+      },
+      {
+        "task_id": 6,
+        "title": "Design User Interface (UI) and User Experience (UX)",
+        "correlation": -0.03069549950975438,
+        "avg_duration": 7.3655
+      },
+      {
+        "task_id": 12,
+        "title": "Conduct User Acceptance Testing (UAT)",
+        "correlation": -0.028899340649748625,
+        "avg_duration": 7.37
+      },
+      {
+        "task_id": 5,
+        "title": "Create Wireframes and Mockups",
+        "correlation": 0.02759921036068467,
+        "avg_duration": 7.319
+      },
+      {
+        "task_id": 16,
+        "title": "Monitor Initial Feedback",
+        "correlation": -0.025654418955799313,
+        "avg_duration": 7.3395
+      },
+      {
+        "task_id": 13,
+        "title": "Fix Bugs and Issues",
+        "correlation": -0.02497758597239147,
+        "avg_duration": 6.3635
+      },
+      {
+        "task_id": 15,
+        "title": "Launch App on App Stores",
+        "correlation": 0.02097297505101937,
+        "avg_duration": 7.3555
+      },
+      {
+        "task_id": 10,
+        "title": "Conduct Unit Testing",
+        "correlation": 0.019170375296579542,
+        "avg_duration": 7.319
+      },
+      {
+        "task_id": 1,
+        "title": "Project Kickoff Meeting",
+        "correlation": 0.015565771090251182,
+        "avg_duration": 7.353
+      },
+      {
+        "task_id": 14,
+        "title": "Prepare Marketing Materials",
+        "correlation": -0.015521297664416688,
+        "avg_duration": 7.3615
+      },
+      {
+        "task_id": 8,
+        "title": "Set Up Development Environment",
+        "correlation": -0.011703827970465881,
+        "avg_duration": 7.3715
+      },
+      {
+        "task_id": 4,
+        "title": "Develop Project Scope Statement",
+        "correlation": 0.010211300637034453,
+        "avg_duration": 7.3415
+      },
+      {
+        "task_id": 2,
+        "title": "Define Project Objectives",
+        "correlation": 0.007969706617370377,
+        "avg_duration": 7.2835
+      },
+      {
+        "task_id": 7,
+        "title": "Review and Approve Design",
+        "correlation": -0.007199594866587903,
+        "avg_duration": 7.313
+      },
+      {
+        "task_id": 18,
+        "title": "Plan for Updates and Improvements",
+        "correlation": 0.003952683174717739,
+        "avg_duration": 7.3335
+      },
+      {
+        "task_id": 11,
+        "title": "Perform Integration Testing",
+        "correlation": 0.002865362291344727,
+        "avg_duration": 7.335
+      },
+      {
+        "task_id": 3,
+        "title": "Identify Key Stakeholders",
+        "correlation": 0.000895018870021858,
+        "avg_duration": 7.306
+      },
+      {
+        "task_id": 17,
+        "title": "Gather User Feedback",
+        "correlation": 0.00042975304338670265,
+        "avg_duration": 7.368
+      }
+    ]
+  }
+}

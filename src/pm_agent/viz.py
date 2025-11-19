@@ -5,10 +5,13 @@ import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 from datetime import datetime, timedelta, date
 from pathlib import Path
+
+import numpy as np
 import pandas as pd
 from rich.console import Console
 from rich.table import Table
 
+from .analysis import MonteCarloResult
 from .tools import load_plan, get_project_root
 
 # Suppress matplotlib UserWarnings about tick generation
@@ -212,3 +215,193 @@ def render_text_gantt(console: Console = None):
     # Print date range
     console.print(f"[dim]Timeline: {min_date.isoformat()} to {max_date.isoformat()} ({total_days} days)[/dim]")
     console.print()
+
+
+def save_finish_distribution_plot(
+    result: MonteCarloResult,
+    output_path: Path,
+    bins: int = 40,
+) -> bool:
+    """Persist a histogram of Monte Carlo completion dates."""
+    if result.finish_samples is None or len(result.finish_samples) == 0:
+        return False
+
+    # Convert sampled finish offsets into actual dates for plotting
+    finish_days = np.array(result.finish_samples, dtype=float)
+    finish_dates = [
+        result.project_start + timedelta(days=float(day))
+        for day in finish_days
+    ]
+    finish_nums = mdates.date2num(finish_dates)
+
+    fig, ax = plt.subplots(figsize=(10, 5))
+    ax.hist(finish_nums, bins=bins, color="#1abc9c", alpha=0.85)
+    ax.set_title("Monte Carlo Completion Distribution")
+    ax.set_xlabel("Completion date")
+    ax.set_ylabel("Simulations")
+    ax.xaxis_date()
+    ax.xaxis.set_major_formatter(mdates.DateFormatter("%Y-%m-%d"))
+    fig.autofmt_xdate()
+
+    # Add percentile markers
+    for label, color in (("p10", "#3498db"), ("p50", "#f1c40f"), ("p90", "#e74c3c")):
+        percentile_date = result.finish_percentiles.get(label)
+        if percentile_date:
+            ax.axvline(
+                mdates.date2num(percentile_date),
+                color=color,
+                linestyle="--",
+                linewidth=1.2,
+                label=label.upper(),
+            )
+
+    if ax.get_legend_handles_labels()[0]:
+        ax.legend()
+
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    fig.tight_layout()
+    fig.savefig(output_path, dpi=150, bbox_inches="tight")
+    plt.close(fig)
+    return True
+
+
+def save_risk_driver_plot(result: MonteCarloResult, output_path: Path, top_n: int = 8) -> bool:
+    """Persist a bar chart highlighting the top risk drivers."""
+    drivers = result.risk_drivers[:top_n]
+    if not drivers:
+        return False
+
+    titles = [f"#{driver.task_id}" for driver in drivers]
+    correlations = [driver.correlation for driver in drivers]
+    colors = ["#e74c3c" if corr > 0 else "#3498db" for corr in correlations]
+
+    fig, ax = plt.subplots(figsize=(8, max(4, len(drivers) * 0.6)))
+    y_pos = np.arange(len(drivers))
+    ax.barh(y_pos, correlations, color=colors, alpha=0.85)
+    ax.set_yticks(y_pos)
+    ax.set_yticklabels(titles)
+    ax.set_xlabel("Correlation to project finish")
+    ax.set_title("Top Risk Drivers")
+    ax.axvline(0, color="#7f8c8d", linewidth=0.8)
+
+    for idx, driver in enumerate(drivers):
+        ax.text(
+            correlations[idx],
+            idx,
+            f"{driver.avg_duration:.1f}d",
+            va="center",
+            ha="left" if correlations[idx] >= 0 else "right",
+            fontsize=8,
+            color="#2c3e50",
+        )
+
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    fig.tight_layout()
+    fig.savefig(output_path, dpi=150, bbox_inches="tight")
+    plt.close(fig)
+    return True
+
+
+def save_cost_distribution_plot(
+    result: MonteCarloResult,
+    output_path: Path,
+    bins: int = 40,
+    currency: str = "$",
+) -> bool:
+    """Persist a histogram of projected costs if data exists."""
+    if result.cost_samples is None or len(result.cost_samples) == 0:
+        return False
+
+    costs = np.array(result.cost_samples, dtype=float)
+    fig, ax = plt.subplots(figsize=(10, 5))
+    ax.hist(costs, bins=bins, color="#9b59b6", alpha=0.85)
+    ax.set_title("Cost Exposure Distribution")
+    ax.set_xlabel(f"Total cost ({currency})")
+    ax.set_ylabel("Simulations")
+
+    for label, color in (("p10", "#3498db"), ("p50", "#f1c40f"), ("p90", "#e74c3c")):
+        value = (result.cost_percentiles or {}).get(label)
+        if value is not None:
+            ax.axvline(value, color=color, linestyle="--", linewidth=1.2, label=label.upper())
+
+    if ax.get_legend_handles_labels()[0]:
+        ax.legend()
+
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    fig.tight_layout()
+    fig.savefig(output_path, dpi=150, bbox_inches="tight")
+    plt.close(fig)
+    return True
+
+
+def save_burnup_chart(series: list, output_path: Path) -> bool:
+    """Plot burnup (done vs total scope) over time."""
+    if not series:
+        return False
+
+    dates = [point["date"] for point in series]
+    done = [point["done"] for point in series]
+    total = [point["total"] for point in series]
+
+    fig, ax = plt.subplots(figsize=(10, 5))
+    x = mdates.date2num(dates)
+    ax.plot_date(x, done, "-o", label="Done", color="#2ecc71")
+    ax.plot_date(x, total, "-o", label="Scope", color="#34495e")
+    ax.fill_between(x, done, total, color="#ecf0f1", alpha=0.4)
+    ax.set_title("Burnup (Done vs Scope)")
+    ax.set_ylabel("Tasks")
+    ax.xaxis.set_major_formatter(mdates.DateFormatter("%Y-%m-%d"))
+    fig.autofmt_xdate()
+    ax.legend()
+
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    fig.tight_layout()
+    fig.savefig(output_path, dpi=150, bbox_inches="tight")
+    plt.close(fig)
+    return True
+
+
+def save_throughput_chart(series: list, output_path: Path) -> bool:
+    """Plot completed tasks per day."""
+    if not series:
+        return False
+
+    dates = [point["date"] for point in series]
+    counts = [point["completed"] for point in series]
+    x = mdates.date2num(dates)
+
+    fig, ax = plt.subplots(figsize=(10, 4))
+    width = 0.8
+    ax.bar(x, counts, width=width, color="#3498db", alpha=0.85)
+    ax.set_title("Throughput (Completed / Day)")
+    ax.set_ylabel("Tasks")
+    ax.xaxis_date()
+    ax.xaxis.set_major_formatter(mdates.DateFormatter("%Y-%m-%d"))
+    fig.autofmt_xdate()
+
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    fig.tight_layout()
+    fig.savefig(output_path, dpi=150, bbox_inches="tight")
+    plt.close(fig)
+    return True
+
+
+def save_slip_histogram(records: list, output_path: Path) -> bool:
+    """Plot planned vs actual slip distribution."""
+    if not records:
+        return False
+
+    values = [record["slip_days"] for record in records]
+
+    fig, ax = plt.subplots(figsize=(8, 4))
+    ax.hist(values, bins=30, color="#e67e22", alpha=0.85)
+    ax.axvline(0, color="#2c3e50", linestyle="--", linewidth=1.2)
+    ax.set_title("Planned vs Actual (days late/early)")
+    ax.set_xlabel("Days late (+) / early (-)")
+    ax.set_ylabel("Tasks")
+
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    fig.tight_layout()
+    fig.savefig(output_path, dpi=150, bbox_inches="tight")
+    plt.close(fig)
+    return True

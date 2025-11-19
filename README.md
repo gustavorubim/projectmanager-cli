@@ -13,6 +13,7 @@ An intelligent CLI tool for managing projects using AI-powered automation with L
 
 
 - Critical path and Monte Carlo risk insights
+- Rolling /health dashboard with burndown/burnup, throughput, cycle-time percentiles, and plan-vs-actual histograms
 - Near-term focus board, artifact vault, and instant documentation export
 - Spreadsheet-friendly `plan.csv` mirror with slash command syncing
 - Automatic decision log entries for every plan change
@@ -181,6 +182,7 @@ pm mobile-app-launch  # Enter REPL in specific project
 - `/criticalpath` - Run critical path analysis
 - `/risk --iterations 5000` - Monte Carlo schedule risk simulation
 - `/forecast --deadline 2025-03-31 --cost-rate 800 --shock 5` - Advanced Monte Carlo (deadline probability, cost, dependency shocks)
+- `/health --days 45` - Rolling burnup/throughput/cycle-time dashboard (exports charts + summary)
 - `/focus --days 14` - Build/save the near-term focus list
 - `/log "message"` - Append structured entries to 04_decisions.log
 - `/documentation` - Generate a Word report inside artifacts/documentation/
@@ -205,6 +207,7 @@ For quick one-off commands without entering the REPL:
 - `pm criticalpath` - Critical path analysis
 - `pm risk --iterations 5000` - Monte Carlo schedule risk simulation
 - `pm forecast --deadline 2025-03-31 --cost-rate 800 --shock 5` - Advanced Monte Carlo forecast
+- `pm health --days 45 --no-export` - Show health dashboard (optionally skip artifact export)
 - `pm focus --days 14` - Show/update the near-term focus list
 - `pm log "message" --type decision --task 4` - Append to decision log
 - `pm documentation --output artifacts/documentation/brief.docx` - Generate documentation

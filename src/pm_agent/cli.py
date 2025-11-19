@@ -7,8 +7,8 @@ import subprocess
 import time
 import shlex
 from pathlib import Path
-from typing import Optional
-from datetime import datetime, date
+from typing import Optional, List
+from datetime import datetime, date, timedelta
 
 import typer
 from rich.console import Console
@@ -32,6 +32,17 @@ from .analysis import (
     compute_critical_path,
     run_monte_carlo_simulation,
     summarize_artifacts,
+    summarize_monte_carlo,
+)
+from .analytics import (
+    record_status_snapshot,
+    load_status_history,
+    filter_history_by_days,
+    compute_burnup_series,
+    derive_task_timelines,
+    compute_throughput_series,
+    compute_cycle_time_stats,
+    compute_slip_stats,
 )
 from .reporting import generate_documentation_report
 from .tools import (
@@ -43,7 +54,16 @@ from .tools import (
     import_plan_from_csv,
     save_plan,
 )
-from .viz import generate_gantt, render_text_gantt
+from .viz import (
+    generate_gantt,
+    render_text_gantt,
+    save_finish_distribution_plot,
+    save_risk_driver_plot,
+    save_cost_distribution_plot,
+    save_burnup_chart,
+    save_throughput_chart,
+    save_slip_histogram,
+)
 
 app = typer.Typer(help="CLI Project Manager Agent", invoke_without_command=True)
 console = Console()
@@ -60,6 +80,7 @@ SLASH_COMMANDS = {
     "criticalpath": "/criticalpath        Run critical path analysis",
     "risk": "/risk                Monte Carlo schedule risk",
     "forecast": "/forecast           Advanced Monte Carlo forecast",
+    "health": "/health              Show health signals dashboard",
     "focus": "/focus               Build/show near-term task list",
     "log": "/log \"...\"          Append entry to log",
     "documentation": "/documentation       Generate Word report",
@@ -113,6 +134,7 @@ def show_help():
     console.print("  /criticalpath        Run critical path analysis")
     console.print("  /risk                Run Monte Carlo schedule risk simulation")
     console.print("  /forecast            Advanced Monte Carlo forecast (costs, deadlines)")
+    console.print("  /health              Show trend dashboard + export charts")
     console.print("  /focus               Build/show near-term task list")
     console.print("  /log \"...\"          Append an entry to the decision log")
     console.print("  /documentation       Generate a Word report with artifacts")
@@ -185,6 +207,11 @@ def handle_status_command(args: list):
 
     console.print(table)
     console.print(f"\nTotal tasks: {len(plan.tasks)}")
+
+    snapshot = record_status_snapshot(plan)
+    console.print(
+        f"[dim]Captured trend snapshot at {snapshot.captured_at.isoformat()} UTC for health dashboards.[/dim]"
+    )
 
 
 def handle_plan_command(args: list):
@@ -382,25 +409,66 @@ def render_risk_simulation(
             milestone_label=milestone_label
         )
 
+    summary = summarize_monte_carlo(result)
     percentiles = result.finish_percentiles
-    panel_text = (
-        f"P10 completion: {percentiles['p10']}\n"
-        f"P50 completion: {percentiles['p50']}\n"
-        f"P90 completion: {percentiles['p90']}\n"
-        f"Iterations: {iterations}"
-    )
+    duration = result.duration_percentiles
+    effort = result.effort_percentiles or {}
+    spread = duration["p90"] - duration["p10"]
+
+    panel_lines = [
+        f"P10 completion: {percentiles['p10']} ({duration['p10']:.1f}d)",
+        f"P50 completion: {percentiles['p50']} ({duration['p50']:.1f}d)",
+        f"P90 completion: {percentiles['p90']} ({duration['p90']:.1f}d)",
+        f"Iterations: {iterations}",
+    ]
     if deadline and result.probability_on_time is not None:
-        panel_text += f"\nOn-time probability (<= {deadline}): {result.probability_on_time * 100:.1f}%"
+        panel_lines.append(f"On-time (<= {deadline}): {result.probability_on_time * 100:.1f}%")
     if milestone_deadline and result.milestone_probability is not None:
         label = milestone_label or f"Tasks due by {milestone_deadline}"
-        panel_text += f"\n{label} on-time: {result.milestone_probability * 100:.1f}%"
+        panel_lines.append(f"{label} on-time: {result.milestone_probability * 100:.1f}%")
     if shock_days:
-        panel_text += f"\nDependency shock window: up to {shock_days}d"
-    console.print(Panel(panel_text, title="Schedule Risk", border_style="cyan"))
+        panel_lines.append(f"Dependency shock window: up to {shock_days}d")
+
+    console.print(Panel("\n".join(panel_lines), title="Schedule Risk", border_style="cyan"))
+
+    timeline_table = Table(title="Completion Percentiles", show_header=True, header_style="bold cyan")
+    timeline_table.add_column("Percentile", style="white")
+    timeline_table.add_column("Calendar Date", style="yellow")
+    timeline_table.add_column("Duration (days)", style="magenta", justify="right")
+    for label in ("p10", "p50", "p90"):
+        timeline_table.add_row(
+            label.upper(),
+            percentiles[label].isoformat(),
+            f"{duration[label]:.1f}",
+        )
+    console.print(timeline_table)
+
+    if effort:
+        effort_table = Table(title="Effort Distribution (person-days)", show_header=True, header_style="bold green")
+        effort_table.add_column("Percentile", style="white")
+        effort_table.add_column("Effort", style="green", justify="right")
+        for label in ("p10", "p50", "p90"):
+            if label in effort:
+                effort_table.add_row(label.upper(), f"{effort[label]:.1f}")
+        console.print(effort_table)
+
+    probability_rows = []
+    if deadline and result.probability_on_time is not None:
+        probability_rows.append((f"Deadline {deadline}", result.probability_on_time))
+    if milestone_deadline and result.milestone_probability is not None:
+        label = milestone_label or "Milestone"
+        probability_rows.append((f"{label} ({milestone_deadline})", result.milestone_probability))
+    if probability_rows:
+        probability_table = Table(title="Deadline Outlook", show_header=True, header_style="bold magenta")
+        probability_table.add_column("Target", style="white")
+        probability_table.add_column("Confidence", style="magenta", justify="right")
+        for label, value in probability_rows:
+            probability_table.add_row(label, f"{value * 100:.1f}%")
+        console.print(probability_table)
 
     if result.risk_drivers:
         table = Table(title="Top Risk Drivers")
-        table.add_column("ID", style="cyan")
+        table.add_column("ID", style="cyan", no_wrap=True)
         table.add_column("Task", style="white")
         table.add_column("Correlation", style="magenta", justify="right")
         table.add_column("Avg Duration (d)", style="yellow", justify="right")
@@ -410,7 +478,7 @@ def render_risk_simulation(
                 str(driver.task_id),
                 driver.title,
                 f"{driver.correlation:.2f}",
-                f"{driver.avg_duration:.1f}"
+                f"{driver.avg_duration:.1f}",
             )
 
         console.print(table)
@@ -423,6 +491,237 @@ def render_risk_simulation(
         cost_table.add_row("P50 Cost", f"${result.cost_percentiles['p50']:,.0f}")
         cost_table.add_row("P90 Cost", f"${result.cost_percentiles['p90']:,.0f}")
         console.print(cost_table)
+
+    # Narrative insights panel
+    insights: list[str] = []
+    finish_stats = summary.get("finish_distribution_stats") or {}
+    if finish_stats:
+        mean_days = finish_stats.get("mean_days", duration["p50"])
+        mean_date = result.project_start + timedelta(days=int(round(mean_days)))
+        insights.append(
+            f"Average completion is {mean_days:.1f} days from start (around {mean_date})."
+        )
+        insights.append(
+            f"90/10 schedule window spans ~{spread:.1f} days, so keep {spread:.1f} days of buffer."
+        )
+    if result.risk_drivers:
+        primary = result.risk_drivers[0]
+        insights.append(
+            f"#{primary.task_id} {primary.title} drives the most variance (corr {primary.correlation:.2f})."
+        )
+    if shock_days:
+        insights.append("Dependency shock modeling is enabled; watch tightly coupled chains.")
+    if cost_rate and result.cost_percentiles:
+        insights.append(
+            f"Median burn is ${result.cost_percentiles['p50']:,.0f} with tail up to ${result.cost_percentiles['p90']:,.0f}."
+        )
+    if not insights:
+        insights.append("No additional insights to highlight.")
+    console.print(Panel("\n".join(insights), title="Insights", border_style="green"))
+
+    # Persist artifacts
+    root = get_project_root()
+    timestamp = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
+    artifact_dir = root / "artifacts" / "analysis" / f"monte_carlo_{timestamp}"
+    artifact_dir.mkdir(parents=True, exist_ok=True)
+
+    metadata = {
+        "iterations": iterations,
+        "cost_rate": cost_rate,
+        "deadline": deadline.isoformat() if deadline else None,
+        "milestone_deadline": milestone_deadline.isoformat() if milestone_deadline else None,
+        "milestone_label": milestone_label,
+        "shock_days": shock_days,
+    }
+    summary_payload = {"parameters": metadata, "results": summary}
+    summary_path = artifact_dir / "summary.json"
+    summary_path.write_text(json.dumps(summary_payload, indent=2))
+    artifact_paths = [summary_path]
+
+    finish_hist_path = artifact_dir / "finish_distribution.png"
+    if save_finish_distribution_plot(result, finish_hist_path):
+        artifact_paths.append(finish_hist_path)
+
+    driver_path = artifact_dir / "risk_drivers.png"
+    if save_risk_driver_plot(result, driver_path):
+        artifact_paths.append(driver_path)
+
+    if cost_rate:
+        cost_hist_path = artifact_dir / "cost_distribution.png"
+        if save_cost_distribution_plot(result, cost_hist_path):
+            artifact_paths.append(cost_hist_path)
+
+    rel_paths = [path.relative_to(root).as_posix() for path in artifact_paths]
+    artifact_panel = "\n".join(f"- {path}" for path in rel_paths)
+    console.print(Panel(artifact_panel, title="Artifacts saved", border_style="blue"))
+
+
+def render_health_dashboard(days: int = 45, export: bool = True):
+    """Display burndown/burnup, throughput, and slip metrics."""
+    history = load_status_history()
+    if not history:
+        console.print("[yellow]No status history recorded yet. Run /status regularly to build trends.[/yellow]")
+        return
+
+    scoped_history = filter_history_by_days(history, days) if days > 0 else history
+    if scoped_history:
+        history = scoped_history
+    elif days > 0:
+        console.print(
+            f"[yellow]No snapshots within the last {days} days; showing entire history ({len(history)} records).[/yellow]"
+        )
+
+    latest = history[-1]
+    timeline = derive_task_timelines(history)
+    burnup = compute_burnup_series(history)
+    throughput = compute_throughput_series(history, timeline=timeline)
+    cycle_stats = compute_cycle_time_stats(history, timeline=timeline)
+    slip_stats = compute_slip_stats(history, timeline=timeline)
+
+    start_day = history[0].captured_at.date()
+    end_day = history[-1].captured_at.date()
+    window_panel = Panel(
+        f"Snapshots: {len(history)}\nWindow: {start_day} -> {end_day}",
+        title="History Window",
+        border_style="cyan",
+    )
+    console.print(window_panel)
+
+    status_table = Table(
+        title=f"Latest Snapshot ({latest.captured_at.strftime('%Y-%m-%d %H:%M')} UTC)",
+        show_header=True,
+        header_style="bold white",
+    )
+    status_table.add_column("Status")
+    status_table.add_column("Count", justify="right")
+    for status in ("todo", "in_progress", "blocked", "done"):
+        status_table.add_row(status.replace("_", " ").title(), str(latest.status_counts.get(status, 0)))
+    status_table.add_row("Total", str(latest.total_tasks))
+    console.print(status_table)
+
+    if burnup:
+        burn_table = Table(title="Burnup/Burndown", header_style="bold cyan")
+        burn_table.add_column("Date", style="white")
+        burn_table.add_column("Done/Total", justify="right")
+        burn_table.add_column("Remaining", justify="right")
+        burn_table.add_column("Blocked", justify="right")
+        for point in burnup[-min(len(burnup), 6):]:
+            burn_table.add_row(
+                point["date"].isoformat(),
+                f"{point['done']}/{point['total']}",
+                str(point["remaining"]),
+                str(point["blocked"]),
+            )
+        console.print(burn_table)
+    else:
+        console.print("[yellow]No burnup data yet. Capture a few /status snapshots first.[/yellow]")
+
+    if throughput:
+        throughput_table = Table(title="Throughput (completed/day)", header_style="bold green")
+        throughput_table.add_column("Date")
+        throughput_table.add_column("Completed", justify="right")
+        for point in throughput[-min(len(throughput), 7):]:
+            throughput_table.add_row(point["date"].isoformat(), str(point["completed"]))
+        console.print(throughput_table)
+    else:
+        console.print("[yellow]No completed tasks recorded in this window.[/yellow]")
+
+    cycle_lines: List[str] = []
+    percentiles = cycle_stats.get("percentiles") or {}
+    if percentiles:
+        cycle_lines.append(f"P50: {percentiles['p50']:.1f}d")
+        if "p80" in percentiles:
+            cycle_lines.append(f"P80: {percentiles['p80']:.1f}d")
+        if "p90" in percentiles:
+            cycle_lines.append(f"P90: {percentiles['p90']:.1f}d")
+    if cycle_stats.get("mean") is not None:
+        cycle_lines.append(f"Mean: {cycle_stats['mean']:.1f}d")
+    cycle_lines.append(f"Samples: {cycle_stats.get('count', 0)}")
+    console.print(Panel("\n".join(cycle_lines), title="Cycle Time", border_style="magenta"))
+
+    cycle_samples = cycle_stats.get("samples", [])[:3]
+    if cycle_samples:
+        slow_table = Table(title="Longest Cycle Tasks", header_style="bold magenta")
+        slow_table.add_column("Task")
+        slow_table.add_column("Cycle (d)", justify="right")
+        slow_table.add_column("Completed")
+        for sample in cycle_samples:
+            slow_table.add_row(
+                f"#{sample['task_id']} {sample['title']}",
+                f"{sample['cycle_days']:.1f}",
+                sample["completed_at"],
+            )
+        console.print(slow_table)
+
+    slip_lines: List[str] = [
+        f"On time / early: {slip_stats.get('on_time', 0)}",
+        f"Late: {slip_stats.get('late', 0)}",
+    ]
+    slip_percentiles = slip_stats.get("percentiles") or {}
+    if slip_percentiles:
+        slip_lines.append(
+            f"Median slip: {slip_percentiles.get('p50', 0):+.1f}d "
+            f"(P90: {slip_percentiles.get('p90', 0):+.1f}d)"
+        )
+    console.print(Panel("\n".join(slip_lines), title="Planned vs Actual", border_style="yellow"))
+
+    late_records = [rec for rec in slip_stats.get("records", []) if rec["slip_days"] > 0][:3]
+    if late_records:
+        slip_table = Table(title="Most Late Tasks", header_style="bold yellow")
+        slip_table.add_column("Task")
+        slip_table.add_column("Due -> Done")
+        slip_table.add_column("Slip (d)", justify="right")
+        for record in late_records:
+            slip_table.add_row(
+                f"#{record['task_id']} {record['title']}",
+                f"{record['due_date']} -> {record['completed_at']}",
+                f"+{record['slip_days']}",
+            )
+        console.print(slip_table)
+
+    if export:
+        root = get_project_root()
+        timestamp = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
+        artifact_dir = root / "artifacts" / "analysis" / f"timeseries_{timestamp}"
+        artifact_dir.mkdir(parents=True, exist_ok=True)
+
+        summary = {
+            "generated_at": datetime.utcnow().isoformat(),
+            "window_days": days,
+            "history_points": len(history),
+            "latest_snapshot": latest.captured_at.isoformat(),
+            "burnup": [
+                {
+                    "date": point["date"].isoformat(),
+                    "done": point["done"],
+                    "total": point["total"],
+                    "remaining": point["remaining"],
+                    "blocked": point["blocked"],
+                }
+                for point in burnup
+            ],
+            "throughput": [
+                {"date": point["date"].isoformat(), "completed": point["completed"]}
+                for point in throughput
+            ],
+            "cycle_time": cycle_stats,
+            "slip": slip_stats,
+        }
+        summary_path = artifact_dir / "health_summary.json"
+        summary_path.write_text(json.dumps(summary, indent=2))
+
+        artifact_paths = [summary_path]
+        if save_burnup_chart(burnup, artifact_dir / "burnup.png"):
+            artifact_paths.append(artifact_dir / "burnup.png")
+        if save_throughput_chart(throughput, artifact_dir / "throughput.png"):
+            artifact_paths.append(artifact_dir / "throughput.png")
+        if save_slip_histogram(slip_stats.get("records", []), artifact_dir / "planned_vs_actual.png"):
+            artifact_paths.append(artifact_dir / "planned_vs_actual.png")
+
+        rel_paths = [path.relative_to(root).as_posix() for path in artifact_paths]
+        console.print(
+            Panel("\n".join(f"- {path}" for path in rel_paths), title="Health artifacts saved", border_style="blue")
+        )
 
 
 def render_focus_board(horizon_days: int = 14, limit: int = 10):
@@ -690,6 +989,29 @@ def handle_forecast_command(args: list):
     )
 
 
+def handle_health_command(args: list):
+    """Adapter for the timeline health dashboard."""
+    days = 45
+    export = True
+    i = 0
+    while i < len(args):
+        token = args[i]
+        if token == "--days" and i + 1 < len(args):
+            try:
+                days = int(args[i + 1])
+            except ValueError:
+                console.print("[red]--days expects an integer[/red]")
+                return
+            i += 2
+        elif token == "--no-export":
+            export = False
+            i += 1
+        else:
+            i += 1
+
+    render_health_dashboard(days=days, export=export)
+
+
 def handle_focus_command(args: list):
     """Adapter for building/showing the focus list."""
     horizon = 14
@@ -834,6 +1156,8 @@ def parse_slash_command(user_input: str):
         handle_risk_command(args)
     elif command == "forecast":
         handle_forecast_command(args)
+    elif command == "health":
+        handle_health_command(args)
     elif command == "focus":
         handle_focus_command(args)
     elif command == "log":
@@ -1198,6 +1522,15 @@ def forecast(
         milestone_label=milestone_label,
         shock_days=shock
     )
+
+
+@app.command()
+def health(
+    days: int = typer.Option(45, "--days", help="History window to display (days, <=0 for full history)"),
+    export: bool = typer.Option(True, "--export/--no-export", help="Persist artifacts under artifacts/analysis")
+):
+    """Show time-series health dashboard and optional artifacts."""
+    render_health_dashboard(days=days, export=export)
 
 
 @app.command()

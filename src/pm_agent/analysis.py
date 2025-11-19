@@ -60,6 +60,10 @@ class MonteCarloResult:
     probability_on_time: Optional[float] = None
     milestone_probability: Optional[float] = None
     milestone_label: Optional[str] = None
+    effort_percentiles: Optional[Dict[str, float]] = None
+    finish_samples: Optional[np.ndarray] = None
+    effort_samples: Optional[np.ndarray] = None
+    cost_samples: Optional[np.ndarray] = None
 
 
 @dataclass
@@ -222,6 +226,7 @@ def run_monte_carlo_simulation(
         today = date.today()
         finish = {"p10": today, "p50": today, "p90": today}
         duration = {"p10": 0.0, "p50": 0.0, "p90": 0.0}
+        zero_array = np.zeros(iterations)
         return MonteCarloResult(
             iterations=iterations,
             finish_percentiles=finish,
@@ -232,6 +237,10 @@ def run_monte_carlo_simulation(
             probability_on_time=None,
             milestone_probability=None,
             milestone_label=milestone_label,
+            effort_percentiles={"p10": 0.0, "p50": 0.0, "p90": 0.0},
+            finish_samples=zero_array,
+            effort_samples=zero_array.copy(),
+            cost_samples=None,
         )
 
     tasks_by_id = {task.id: task for task in tasks}
@@ -315,9 +324,16 @@ def run_monte_carlo_simulation(
 
     risk_drivers.sort(key=lambda driver: abs(driver.correlation), reverse=True)
 
+    total_person_days = np.sum(np.vstack(list(duration_samples.values())), axis=0)
+    effort_percentiles = {
+        "p10": float(np.percentile(total_person_days, 10)),
+        "p50": float(np.percentile(total_person_days, 50)),
+        "p90": float(np.percentile(total_person_days, 90)),
+    }
+
     cost_percentiles = None
+    cost_samples = None
     if cost_rate:
-        total_person_days = np.sum(np.vstack(list(duration_samples.values())), axis=0)
         cost_samples = total_person_days * cost_rate
         cost_percentiles = {
             "p10": float(np.percentile(cost_samples, 10)),
@@ -354,7 +370,65 @@ def run_monte_carlo_simulation(
         probability_on_time=probability_on_time,
         milestone_probability=milestone_probability,
         milestone_label=milestone_label,
+        effort_percentiles=effort_percentiles,
+        finish_samples=project_finish,
+        effort_samples=total_person_days,
+        cost_samples=cost_samples,
     )
+
+
+def summarize_monte_carlo(result: MonteCarloResult) -> Dict[str, object]:
+    """Return a JSON-ready summary of Monte Carlo outcomes."""
+
+    def _format_percentiles(percentiles: Dict[str, date]) -> Dict[str, str]:
+        return {key: value.isoformat() for key, value in percentiles.items()}
+
+    finish_stats: Dict[str, float] = {}
+    if result.finish_samples is not None and len(result.finish_samples) > 0:
+        finish_stats = {
+            "mean_days": float(np.mean(result.finish_samples)),
+            "std_days": float(np.std(result.finish_samples)),
+            "min_days": float(np.min(result.finish_samples)),
+            "max_days": float(np.max(result.finish_samples)),
+        }
+
+    cost_stats: Optional[Dict[str, float]] = None
+    if result.cost_samples is not None and len(result.cost_samples) > 0:
+        cost_stats = {
+            "mean": float(np.mean(result.cost_samples)),
+            "std": float(np.std(result.cost_samples)),
+            "min": float(np.min(result.cost_samples)),
+            "max": float(np.max(result.cost_samples)),
+        }
+
+    summary: Dict[str, object] = {
+        "iterations": result.iterations,
+        "generated_at": datetime.utcnow().isoformat(),
+        "project_start": result.project_start.isoformat(),
+        "finish_percentiles": _format_percentiles(result.finish_percentiles),
+        "duration_percentiles": result.duration_percentiles,
+        "effort_percentiles": result.effort_percentiles,
+        "finish_distribution_stats": finish_stats,
+        "probability_on_time": result.probability_on_time,
+        "milestone_probability": result.milestone_probability,
+        "milestone_label": result.milestone_label,
+        "risk_drivers": [
+            {
+                "task_id": driver.task_id,
+                "title": driver.title,
+                "correlation": driver.correlation,
+                "avg_duration": driver.avg_duration,
+            }
+            for driver in result.risk_drivers
+        ],
+    }
+
+    if result.cost_percentiles:
+        summary["cost_percentiles"] = result.cost_percentiles
+    if cost_stats:
+        summary["cost_distribution_stats"] = cost_stats
+
+    return summary
 
 
 def build_focus_board(
