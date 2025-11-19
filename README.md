@@ -39,6 +39,23 @@ pm new my-project
 cd my-project-<timestamp-id>  # Folder name is <name>-<unique timestamp>. Use the ID printed after creation.
 pm                    # Enter interactive mode
 ```
+
+### Prefer Conda instead of UV?
+
+```bash
+# Create environment (Python 3.12 recommended)
+conda create -n pm-agent python=3.12
+conda activate pm-agent
+
+# Install project in editable mode
+pip install -e .
+
+# Configure Gemini key
+cp .env.example .env
+# edit .env and set GOOGLE_API_KEY=your-key
+```
+
+All other usage instructions are the same once the environment is activated (`conda activate pm-agent`).
 Each new workspace gets a timestamp-based ID, so a request like `pm new mobile-app` might create `mobile-app-20251119-070150`. The exact path is shown in the CLI output and saved to `.pm/project.json` alongside the name, ID, and creation time.
 
 ## Installation
