@@ -76,31 +76,96 @@ def create_agent(model: str = "gpt-4o", temperature: float = 0.1):
         return {"messages": [response]}
 
     # Define tool execution node
+    def _extract_tool_calls(message):
+        """Return tool call entries from an AI message."""
+        calls = getattr(message, "tool_calls", None)
+        if not calls:
+            calls = message.additional_kwargs.get("tool_calls")
+        return calls or []
+
     def call_tools(state: MessagesState):
         """Execute the requested tools."""
         messages = state["messages"]
         last_message = messages[-1]
 
+        tool_calls = _extract_tool_calls(last_message)
         tool_results = []
-        for tool_call in last_message.tool_calls:
-            # Find and execute the tool
-            tool = next((t for t in TOOLS if t.name == tool_call["name"]), None)
-            if tool:
+
+        # Ensure we respond to every tool call, even if something goes wrong
+        for tool_call in tool_calls:
+            try:
+                # LangChain/OpenAI may return dicts or objects; support both
+                tool_call_id = getattr(tool_call, "id", None) or tool_call.get("id")
+                tool_name = (
+                    getattr(tool_call, "name", None)
+                    or getattr(getattr(tool_call, "function", None), "name", None)
+                    or tool_call.get("name")
+                    or (tool_call.get("function", {}) or {}).get("name")
+                )
+                tool_args = (
+                    getattr(tool_call, "args", None)
+                    or getattr(getattr(tool_call, "function", None), "arguments", None)
+                    or tool_call.get("args")
+                    or (tool_call.get("function", {}) or {}).get("arguments")
+                    or {}
+                )
+                if isinstance(tool_args, str):
+                    import json as _json
+                    try:
+                        tool_args = _json.loads(tool_args)
+                    except Exception:
+                        tool_args = {"input": tool_args}
+
+                tool = next((t for t in TOOLS if t.name == tool_name), None)
+                if not tool:
+                    tool_results.append(
+                        ToolMessage(
+                            content=f"Error: Unknown tool '{tool_name}'",
+                            tool_call_id=tool_call_id
+                        )
+                    )
+                    continue
+
                 try:
-                    result = tool.invoke(tool_call["args"])
+                    result = tool.invoke(tool_args)
                     tool_results.append(
                         ToolMessage(
                             content=str(result),
-                            tool_call_id=tool_call["id"]
+                            tool_call_id=tool_call_id
                         )
                     )
                 except Exception as e:
+                    # Log the error and continue with other tool calls
+                    import traceback
+                    error_msg = f"Error executing {tool_name}: {str(e)}\n{traceback.format_exc()}"
+                    print(f"Tool execution error: {error_msg}")
                     tool_results.append(
                         ToolMessage(
                             content=f"Error: {str(e)}",
-                            tool_call_id=tool_call["id"]
+                            tool_call_id=tool_call_id
                         )
                     )
+            except Exception as e:
+                # Catch any error in extracting tool call info
+                import traceback
+                error_msg = f"Error processing tool call: {str(e)}\n{traceback.format_exc()}"
+                print(f"Tool call processing error: {error_msg}")
+                # Try to get tool_call_id even if other extraction failed
+                try:
+                    tool_call_id = getattr(tool_call, "id", None) or tool_call.get("id", "unknown")
+                    tool_results.append(
+                        ToolMessage(
+                            content=f"Error processing tool call: {str(e)}",
+                            tool_call_id=tool_call_id
+                        )
+                    )
+                except:
+                    # If we can't even get the ID, skip this one
+                    pass
+
+        # Verify we have a response for every tool call
+        if len(tool_results) != len(tool_calls):
+            print(f"WARNING: Tool call count mismatch. Calls: {len(tool_calls)}, Results: {len(tool_results)}")
 
         return {"messages": tool_results}
 
@@ -110,7 +175,11 @@ def create_agent(model: str = "gpt-4o", temperature: float = 0.1):
         messages = state["messages"]
         last_message = messages[-1]
 
-        if hasattr(last_message, "tool_calls") and last_message.tool_calls:
+        tool_calls = getattr(last_message, "tool_calls", None)
+        if not tool_calls:
+            tool_calls = last_message.additional_kwargs.get("tool_calls")
+
+        if tool_calls:
             return "tools"
         return "__end__"
 
