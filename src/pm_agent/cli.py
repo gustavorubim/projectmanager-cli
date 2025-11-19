@@ -543,7 +543,7 @@ def render_risk_simulation(
     }
     summary_payload = {"parameters": metadata, "results": summary}
     summary_path = artifact_dir / "summary.json"
-    summary_path.write_text(json.dumps(summary_payload, indent=2))
+    summary_path.write_text(json.dumps(summary_payload, indent=2), encoding="utf-8")
     artifact_paths = [summary_path]
 
     finish_hist_path = artifact_dir / "finish_distribution.png"
@@ -716,7 +716,7 @@ def render_health_dashboard(days: int = 45, export: bool = True):
             "slip": slip_stats,
         }
         summary_path = artifact_dir / "health_summary.json"
-        summary_path.write_text(json.dumps(summary, indent=2))
+        summary_path.write_text(json.dumps(summary, indent=2), encoding="utf-8")
 
         artifact_paths = [summary_path]
         if save_burnup_chart(burnup, artifact_dir / "burnup.png"):
@@ -871,7 +871,7 @@ def render_workload_dashboard(limit: int = 12, export: bool = True):
             "priority_gaps": [task.id for task in priority_gaps],
         }
         summary_path = artifact_dir / "workload_summary.json"
-        summary_path.write_text(json.dumps(summary, indent=2))
+        summary_path.write_text(json.dumps(summary, indent=2), encoding="utf-8")
         rel_paths = [summary_path.relative_to(root).as_posix()]
         console.print(Panel("\n".join(f"- {path}" for path in rel_paths), title="Workload artifacts saved", border_style="blue"))
 
@@ -1008,12 +1008,25 @@ def handle_new_command(args: list):
         console.print("Usage: /new <project-name>")
         return
 
-    name = args[0]
-    project_path = Path(name)
-
-    if project_path.exists():
-        console.print(f"[red]Error: Directory '{name}' already exists[/red]")
+    base_name = args[0].strip()
+    if not base_name:
+        console.print("[red]Error: Project name cannot be empty[/red]")
         return
+
+    def _generate_project_id(counter: int = 0) -> str:
+        timestamp = datetime.utcnow().strftime("%Y%m%d-%H%M%S")
+        return f"{timestamp}-{counter}" if counter else timestamp
+
+    counter = 0
+    project_id = _generate_project_id(counter)
+    project_dir_name = f"{base_name}-{project_id}"
+    project_path = Path(project_dir_name)
+
+    while project_path.exists():
+        counter += 1
+        project_id = _generate_project_id(counter)
+        project_dir_name = f"{base_name}-{project_id}"
+        project_path = Path(project_dir_name)
 
     # Create project directory
     project_path.mkdir(parents=True)
@@ -1024,7 +1037,19 @@ def handle_new_command(args: list):
     # Create all standard files
     ensure_project_files()
 
-    console.print(f"[green]OK[/green] Project '{name}' created successfully!")
+    metadata = {
+        "project_name": base_name,
+        "project_id": project_id,
+        "folder": project_dir_name,
+        "created_at": datetime.utcnow().isoformat() + "Z",
+    }
+    manifest_path = project_path / ".pm" / "project.json"
+    manifest_path.parent.mkdir(parents=True, exist_ok=True)
+    manifest_path.write_text(json.dumps(metadata, indent=2), encoding="utf-8")
+
+    console.print(f"[green]OK[/green] Project '{base_name}' created successfully!")
+    console.print(f"[cyan]Assigned ID:[/cyan] {project_id}")
+    console.print(f"[cyan]Directory:[/cyan] {project_dir_name}")
     console.print(f"[cyan]Switched to project directory[/cyan]")
 
 

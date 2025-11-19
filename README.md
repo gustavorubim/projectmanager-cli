@@ -36,9 +36,10 @@ cp .env.example .env  # Then add your OPENAI_API_KEY
 
 # Start using
 pm new my-project
-cd my-project
+cd my-project-<timestamp-id>  # Folder name is <name>-<unique timestamp>. Use the ID printed after creation.
 pm                    # Enter interactive mode
 ```
+Each new workspace gets a timestamp-based ID, so a request like `pm new mobile-app` might create `mobile-app-20251119-070150`. The exact path is shown in the CLI output and saved to `.pm/project.json` alongside the name, ID, and creation time.
 
 ## Installation
 
@@ -110,7 +111,8 @@ pip install -e .
 
 ### 1. Start PM Agent
 ```bash
-cd my-project-folder  # Or create new project with: pm new my-project
+pm new my-project          # Creates my-project-<timestamp-id>
+cd my-project-<timestamp-id>  # Use the actual folder name shown in CLI output
 pm
 ```
 
@@ -198,7 +200,7 @@ pm mobile-app-launch  # Enter REPL in specific project
 
 ### Direct Commands (Alternative)
 For quick one-off commands without entering the REPL:
-- `pm new <name>` - Create a new project
+- `pm new <name>` - Create a new project (`<name>-<timestamp-id>` folder with metadata under `.pm/project.json`)
 - `pm status` - Show task table
 - `pm status --week` - Get AI weekly summary
 - `pm plan` - View the plan JSON

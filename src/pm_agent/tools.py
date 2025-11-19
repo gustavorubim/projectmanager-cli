@@ -63,7 +63,7 @@ def ensure_project_files():
 
 ## Stakeholders
 [Who are the key people involved?]
-""")
+""", encoding="utf-8")
 
     # Create plan if not exists
     plan_path = root / "01_plan.json"
@@ -77,17 +77,17 @@ def ensure_project_files():
     # Create followups if not exists
     followups_path = root / "02_followups.json"
     if not followups_path.exists():
-        followups_path.write_text("[]")
+        followups_path.write_text("[]", encoding="utf-8")
 
     # Create risks/issues if not exists
     risks_path = root / "03_risks_issues.md"
     if not risks_path.exists():
-        risks_path.write_text("# Risks & Issues\n\n")
+        risks_path.write_text("# Risks & Issues\n\n", encoding="utf-8")
 
     # Create decisions log if not exists
     decisions_path = root / "04_decisions.log"
     if not decisions_path.exists():
-        decisions_path.write_text("# Decision Log\n\n")
+        decisions_path.write_text("# Decision Log\n\n", encoding="utf-8")
 
     # Create focus list file
     focus_path = root / "05_focus.json"
@@ -97,7 +97,7 @@ def ensure_project_files():
             "horizon_days": 14,
             "max_items": 10,
             "items": []
-        }, indent=2))
+        }, indent=2), encoding="utf-8")
 
     # Create artifacts folder structure for easy reference
     artifacts_root = root / "artifacts"
@@ -113,7 +113,8 @@ def ensure_project_files():
             "- analysis/: Outputs such as Monte Carlo charts or CSVs\n"
             "- documentation/: Generated briefings and Word reports\n"
             "- inputs/: Raw materials supplied by stakeholders\n"
-            "- exports/: Anything you share externally\n"
+            "- exports/: Anything you share externally\n",
+            encoding="utf-8",
         )
 
     # Create .pm directory for agent memory
@@ -141,7 +142,7 @@ def load_plan() -> ProjectPlan:
     if not plan_path.exists():
         return ProjectPlan()
 
-    data = json.loads(plan_path.read_text())
+    data = json.loads(plan_path.read_text(encoding="utf-8"))
     return _plan_from_data(data)
 
 
@@ -212,9 +213,9 @@ def save_plan(plan: ProjectPlan, log_changes: bool = True):
 
     before_plan = ProjectPlan()
     if plan_path.exists():
-        before_plan = _plan_from_data(json.loads(plan_path.read_text()))
+        before_plan = _plan_from_data(json.loads(plan_path.read_text(encoding="utf-8")))
 
-    plan_path.write_text(json.dumps(plan.to_json_list(), indent=2))
+    plan_path.write_text(json.dumps(plan.to_json_list(), indent=2), encoding="utf-8")
     export_plan_to_csv(plan)
 
     if log_changes:
@@ -360,7 +361,7 @@ def load_focus_board() -> FocusBoard:
     if not focus_path.exists():
         return FocusBoard()
 
-    data = json.loads(focus_path.read_text())
+    data = json.loads(focus_path.read_text(encoding="utf-8"))
 
     generated_at = data.get("generated_at")
     if generated_at:
@@ -377,7 +378,7 @@ def save_focus_board(board: FocusBoard):
     """Persist the focus board representation."""
     root = get_project_root()
     focus_path = root / "05_focus.json"
-    focus_path.write_text(board.model_dump_json(indent=2))
+    focus_path.write_text(board.model_dump_json(indent=2), encoding="utf-8")
 
 
 @tool
@@ -387,7 +388,7 @@ def read_context() -> str:
 
     # Read charter
     charter_path = root / "00_project_charter.md"
-    charter = charter_path.read_text() if charter_path.exists() else "No charter found."
+    charter = charter_path.read_text(encoding="utf-8") if charter_path.exists() else "No charter found."
 
     # Read plan summary
     plan = load_plan()
@@ -397,7 +398,7 @@ def read_context() -> str:
 
     # Read recent decisions
     decisions_path = root / "04_decisions.log"
-    decisions = decisions_path.read_text() if decisions_path.exists() else "No decisions logged."
+    decisions = decisions_path.read_text(encoding="utf-8") if decisions_path.exists() else "No decisions logged."
 
     context = f"""# Project Context
 
@@ -586,7 +587,7 @@ def write_file(filename: str, content: str) -> str:
     # Create parent directories if needed
     file_path.parent.mkdir(parents=True, exist_ok=True)
 
-    file_path.write_text(content)
+    file_path.write_text(content, encoding="utf-8")
     return f"File {filename} created successfully."
 
 

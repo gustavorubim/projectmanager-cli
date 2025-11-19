@@ -15,7 +15,7 @@ from .schema import FocusBoard, ProjectPlan
 
 def _read_file(path: Path, fallback: str) -> str:
     if path.exists():
-        return path.read_text()
+        return path.read_text(encoding="utf-8")
     return fallback
 
 
