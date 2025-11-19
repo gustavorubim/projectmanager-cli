@@ -56,6 +56,10 @@ class MonteCarloResult:
     duration_percentiles: Dict[str, float]
     risk_drivers: List[RiskDriver]
     project_start: date
+    cost_percentiles: Optional[Dict[str, float]] = None
+    probability_on_time: Optional[float] = None
+    milestone_probability: Optional[float] = None
+    milestone_label: Optional[str] = None
 
 
 @dataclass
@@ -201,7 +205,15 @@ def compute_critical_path(plan: ProjectPlan) -> CriticalPathResult:
     return CriticalPathResult(schedule, total_duration, project_start, warnings)
 
 
-def run_monte_carlo_simulation(plan: ProjectPlan, iterations: int = 2000) -> MonteCarloResult:
+def run_monte_carlo_simulation(
+    plan: ProjectPlan,
+    iterations: int = 2000,
+    cost_rate: Optional[float] = None,
+    deadline: Optional[date] = None,
+    milestone_deadline: Optional[date] = None,
+    shock_days: int = 0,
+    milestone_label: Optional[str] = None
+) -> MonteCarloResult:
     """Run a Monte Carlo simulation to understand schedule risk."""
     tasks = plan.tasks
     project_start = _project_start_date(plan)
@@ -210,7 +222,17 @@ def run_monte_carlo_simulation(plan: ProjectPlan, iterations: int = 2000) -> Mon
         today = date.today()
         finish = {"p10": today, "p50": today, "p90": today}
         duration = {"p10": 0.0, "p50": 0.0, "p90": 0.0}
-        return MonteCarloResult(iterations, finish, duration, [], project_start)
+        return MonteCarloResult(
+            iterations=iterations,
+            finish_percentiles=finish,
+            duration_percentiles=duration,
+            risk_drivers=[],
+            project_start=project_start,
+            cost_percentiles=None,
+            probability_on_time=None,
+            milestone_probability=None,
+            milestone_label=milestone_label,
+        )
 
     tasks_by_id = {task.id: task for task in tasks}
     durations = {task.id: _duration_estimates_for_risk(task) for task in tasks}
@@ -252,7 +274,11 @@ def run_monte_carlo_simulation(plan: ProjectPlan, iterations: int = 2000) -> Mon
         for dep in tasks_by_id[task_id].dependencies:
             if dep in finish_samples:
                 start_samples = np.maximum(start_samples, finish_samples[dep])
-        finish_samples[task_id] = start_samples + samples
+        if shock_days > 0 and tasks_by_id[task_id].dependencies:
+            extra_delay = np.random.uniform(0, shock_days, size=iterations)
+        else:
+            extra_delay = 0
+        finish_samples[task_id] = start_samples + samples + extra_delay
 
     project_finish = np.max(np.vstack(list(finish_samples.values())), axis=0)
 
@@ -289,12 +315,45 @@ def run_monte_carlo_simulation(plan: ProjectPlan, iterations: int = 2000) -> Mon
 
     risk_drivers.sort(key=lambda driver: abs(driver.correlation), reverse=True)
 
+    cost_percentiles = None
+    if cost_rate:
+        total_person_days = np.sum(np.vstack(list(duration_samples.values())), axis=0)
+        cost_samples = total_person_days * cost_rate
+        cost_percentiles = {
+            "p10": float(np.percentile(cost_samples, 10)),
+            "p50": float(np.percentile(cost_samples, 50)),
+            "p90": float(np.percentile(cost_samples, 90)),
+        }
+
+    probability_on_time = None
+    if deadline:
+        horizon_days = (deadline - project_start).days
+        probability_on_time = float(np.mean(project_finish <= horizon_days))
+
+    milestone_probability = None
+    if milestone_deadline:
+        milestone_tasks = [
+            task_id for task_id, task in tasks_by_id.items()
+            if task.due_date and task.due_date <= milestone_deadline
+        ]
+        if milestone_tasks:
+            milestone_finish = np.max(
+                np.vstack([finish_samples[task_id] for task_id in milestone_tasks]),
+                axis=0
+            )
+            milestone_horizon = (milestone_deadline - project_start).days
+            milestone_probability = float(np.mean(milestone_finish <= milestone_horizon))
+
     return MonteCarloResult(
         iterations=iterations,
         finish_percentiles=finish_percentiles,
         duration_percentiles=duration_percentiles,
         risk_drivers=risk_drivers,
         project_start=project_start,
+        cost_percentiles=cost_percentiles,
+        probability_on_time=probability_on_time,
+        milestone_probability=milestone_probability,
+        milestone_label=milestone_label,
     )
 
 

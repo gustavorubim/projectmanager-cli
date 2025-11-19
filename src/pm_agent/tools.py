@@ -4,7 +4,7 @@ import csv
 import json
 from datetime import datetime, date
 from pathlib import Path
-from typing import Optional, List
+from typing import Optional, List, Dict
 from langchain_core.tools import tool
 
 from .schema import ProjectPlan, Task, FocusBoard
@@ -60,8 +60,7 @@ def ensure_project_files():
     # Create plan if not exists
     plan_path = root / "01_plan.json"
     if not plan_path.exists():
-        plan_path.write_text("[]")
-        export_plan_to_csv(ProjectPlan())
+        save_plan(ProjectPlan(), log_changes=False)
     else:
         csv_path = root / "plan.csv"
         if not csv_path.exists():
@@ -114,6 +113,18 @@ def ensure_project_files():
     pm_dir.mkdir(exist_ok=True)
 
 
+def _plan_from_data(data: List[dict]) -> ProjectPlan:
+    """Create a ProjectPlan instance from JSON-compatible list."""
+    tasks = []
+    for task_data in data:
+        if task_data.get("start_date"):
+            task_data["start_date"] = date.fromisoformat(task_data["start_date"])
+        if task_data.get("due_date"):
+            task_data["due_date"] = date.fromisoformat(task_data["due_date"])
+        tasks.append(Task(**task_data))
+    return ProjectPlan(tasks=tasks)
+
+
 def load_plan() -> ProjectPlan:
     """Load the project plan from 01_plan.json."""
     root = get_project_root()
@@ -123,26 +134,70 @@ def load_plan() -> ProjectPlan:
         return ProjectPlan()
 
     data = json.loads(plan_path.read_text())
-
-    # Convert date strings to date objects
-    tasks = []
-    for task_data in data:
-        if task_data.get("start_date"):
-            task_data["start_date"] = date.fromisoformat(task_data["start_date"])
-        if task_data.get("due_date"):
-            task_data["due_date"] = date.fromisoformat(task_data["due_date"])
-        tasks.append(Task(**task_data))
-
-    return ProjectPlan(tasks=tasks)
+    return _plan_from_data(data)
 
 
-def save_plan(plan: ProjectPlan):
+def _summarize_plan_changes(before: ProjectPlan, after: ProjectPlan) -> Optional[str]:
+    """Return a human-readable summary of plan differences."""
+    before_map: Dict[int, Task] = {task.id: task for task in before.tasks}
+    after_map: Dict[int, Task] = {task.id: task for task in after.tasks}
+
+    added_ids = sorted(set(after_map) - set(before_map))
+    removed_ids = sorted(set(before_map) - set(after_map))
+    common_ids = sorted(set(before_map) & set(after_map))
+
+    summary_lines = []
+
+    for task_id in added_ids:
+        task = after_map[task_id]
+        due = task.due_date.isoformat() if task.due_date else "no due date"
+        summary_lines.append(f"- Added #{task.id}: {task.title} (status {task.status}, due {due})")
+
+    for task_id in removed_ids:
+        task = before_map[task_id]
+        summary_lines.append(f"- Removed #{task.id}: {task.title}")
+
+    fields = ["title", "assignee", "start_date", "due_date", "status", "dependencies"]
+    for task_id in common_ids:
+        before_task = before_map[task_id]
+        after_task = after_map[task_id]
+        changes = []
+        for field in fields:
+            before_value = getattr(before_task, field)
+            after_value = getattr(after_task, field)
+            if before_value != after_value:
+                if isinstance(before_value, date):
+                    before_value = before_value.isoformat()
+                if isinstance(after_value, date):
+                    after_value = after_value.isoformat()
+                changes.append(f"{field}: {before_value} -> {after_value}")
+        if changes:
+            summary = ", ".join(changes)
+            summary_lines.append(f"- Updated #{task_id}: {summary}")
+
+    if not summary_lines:
+        return None
+
+    header = f"Plan updated ({len(summary_lines)} change{'s' if len(summary_lines) != 1 else ''}):"
+    return "\n".join([header] + summary_lines)
+
+
+def save_plan(plan: ProjectPlan, log_changes: bool = True):
     """Save the project plan to 01_plan.json."""
     root = get_project_root()
     plan_path = root / "01_plan.json"
 
+    before_plan = ProjectPlan()
+    if plan_path.exists():
+        before_plan = _plan_from_data(json.loads(plan_path.read_text()))
+
     plan_path.write_text(json.dumps(plan.to_json_list(), indent=2))
     export_plan_to_csv(plan)
+
+    if log_changes:
+        change_summary = _summarize_plan_changes(before_plan, plan)
+        if change_summary:
+            append_log(change_summary)
 
 
 def _resolve_csv_path(csv_file: Optional[str] = None) -> Path:

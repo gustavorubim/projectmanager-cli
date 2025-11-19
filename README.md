@@ -15,6 +15,7 @@ An intelligent CLI tool for managing projects using AI-powered automation with L
 - Critical path and Monte Carlo risk insights
 - Near-term focus board, artifact vault, and instant documentation export
 - Spreadsheet-friendly `plan.csv` mirror with slash command syncing
+- Automatic decision log entries for every plan change
 
 ## Quick Install (TL;DR)
 
@@ -122,7 +123,7 @@ my-project/
 ├── 01_plan.json                # Task list (managed by agent)
 ├── 02_followups.json           # Action items
 ├── 03_risks_issues.md          # Risks and issues log
-├── 04_decisions.log            # Decision journal
+├── 04_decisions.log            # Decision journal (auto-logs plan updates)
 ├── 05_focus.json               # Near-term focus list snapshot
 ├── plan.csv                    # Spreadsheet-friendly mirror of 01_plan.json
 ├── gantt_latest.png            # Auto-generated timeline
@@ -179,6 +180,7 @@ pm mobile-app-launch  # Enter REPL in specific project
 - `/gantt --open` - Generate and open chart
 - `/criticalpath` - Run critical path analysis
 - `/risk --iterations 5000` - Monte Carlo schedule risk simulation
+- `/forecast --deadline 2025-03-31 --cost-rate 800 --shock 5` - Advanced Monte Carlo (deadline probability, cost, dependency shocks)
 - `/focus --days 14` - Build/save the near-term focus list
 - `/log "message"` - Append structured entries to 04_decisions.log
 - `/documentation` - Generate a Word report inside artifacts/documentation/
@@ -202,6 +204,7 @@ For quick one-off commands without entering the REPL:
 - `pm gantt --open` - Generate and open chart
 - `pm criticalpath` - Critical path analysis
 - `pm risk --iterations 5000` - Monte Carlo schedule risk simulation
+- `pm forecast --deadline 2025-03-31 --cost-rate 800 --shock 5` - Advanced Monte Carlo forecast
 - `pm focus --days 14` - Show/update the near-term focus list
 - `pm log "message" --type decision --task 4` - Append to decision log
 - `pm documentation --output artifacts/documentation/brief.docx` - Generate documentation
@@ -214,6 +217,20 @@ For quick one-off commands without entering the REPL:
 - After editing the CSV, sync it back with `/plan --update-from-csv [optional_csv_path]` or `pm plan --update-from-csv --csv-path my_plan.csv`.
 - The import validates IDs, dependencies, and dates, rewrites the JSON source of truth, and regenerates the Gantt chart so every artifact reflects your spreadsheet edits.
 - Keep the CSV header row intact (`id,title,assignee,...`). Leave cells blank to clear values; list dependencies as comma-separated IDs (e.g., `1,2,5`).
+
+### Monte Carlo Forecasting
+- `/risk` runs a quick Monte Carlo simulation that reports P10/P50/P90 finish dates and highlights the top risk drivers.
+- `/forecast` expands on that with optional flags:
+  - `--deadline YYYY-MM-DD` – Show the probability of finishing by a specific date.
+  - `--milestone YYYY-MM-DD --milestone-label "MVP"` – Track on-time probability for a subset of tasks due by that milestone.
+  - `--cost-rate 800` – Convert sampled person-days into cost percentiles using a flat daily rate.
+  - `--shock 5` – Stress-test dependencies by injecting up to 5 random delay days into tasks that have predecessors.
+- Results include schedule percentiles, optional cost tables, milestone probabilities, and the same ranked risk drivers so you know where to focus mitigation.
+
+### Automatic Change Logging
+- `04_decisions.log` is auto-populated whenever the plan changes via the agent, CSV import, or CLI helpers.
+- Each entry summarizes added/removed tasks and field-level updates (status shifts, date changes, dependency updates, etc.).
+- You can still add manual context with `/log "..."`, but the baseline audit trail is guaranteed even if you forget.
 
 ## Project File Structure
 

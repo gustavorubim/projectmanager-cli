@@ -8,7 +8,7 @@ import time
 import shlex
 from pathlib import Path
 from typing import Optional
-from datetime import datetime
+from datetime import datetime, date
 
 import typer
 from rich.console import Console
@@ -59,6 +59,7 @@ SLASH_COMMANDS = {
     "followup": "/followup <task>     Quick add task",
     "criticalpath": "/criticalpath        Run critical path analysis",
     "risk": "/risk                Monte Carlo schedule risk",
+    "forecast": "/forecast           Advanced Monte Carlo forecast",
     "focus": "/focus               Build/show near-term task list",
     "log": "/log \"...\"          Append entry to log",
     "documentation": "/documentation       Generate Word report",
@@ -111,6 +112,7 @@ def show_help():
     console.print("    [dim]Example: /followup \"Fix bug\" --due 2025-12-01 --assign john[/dim]")
     console.print("  /criticalpath        Run critical path analysis")
     console.print("  /risk                Run Monte Carlo schedule risk simulation")
+    console.print("  /forecast            Advanced Monte Carlo forecast (costs, deadlines)")
     console.print("  /focus               Build/show near-term task list")
     console.print("  /log \"...\"          Append an entry to the decision log")
     console.print("  /documentation       Generate a Word report with artifacts")
@@ -123,6 +125,17 @@ def show_help():
     console.print("[bold]Tips[/bold]")
     console.print("  - Press Ctrl+C at any time to exit")
     console.print("  - All slash commands can also be used directly (e.g., pm status)\n")
+
+
+def parse_date_option(date_str: str) -> date:
+    """Parse date strings supporting ISO or common slash formats."""
+    formats = ("%Y-%m-%d", "%m/%d/%Y", "%Y/%m/%d")
+    for fmt in formats:
+        try:
+            return datetime.strptime(date_str, fmt).date()
+        except ValueError:
+            continue
+    raise ValueError(f"Invalid date format '{date_str}'. Use YYYY-MM-DD or MM/DD/YYYY.")
 
 
 def handle_status_command(args: list):
@@ -343,7 +356,14 @@ def render_critical_path():
         console.print(Panel("\n".join(result.warnings), title="Warnings", border_style="yellow"))
 
 
-def render_risk_simulation(iterations: int = 2000):
+def render_risk_simulation(
+    iterations: int = 2000,
+    cost_rate: Optional[float] = None,
+    deadline: Optional[date] = None,
+    milestone_deadline: Optional[date] = None,
+    milestone_label: Optional[str] = None,
+    shock_days: int = 0
+):
     """Run Monte Carlo schedule risk simulation and display results."""
     plan = load_plan()
 
@@ -352,7 +372,15 @@ def render_risk_simulation(iterations: int = 2000):
         return
 
     with console.status("[cyan]Running Monte Carlo simulation...[/cyan]"):
-        result = run_monte_carlo_simulation(plan, iterations=iterations)
+        result = run_monte_carlo_simulation(
+            plan,
+            iterations=iterations,
+            cost_rate=cost_rate,
+            deadline=deadline,
+            milestone_deadline=milestone_deadline,
+            shock_days=shock_days,
+            milestone_label=milestone_label
+        )
 
     percentiles = result.finish_percentiles
     panel_text = (
@@ -361,6 +389,13 @@ def render_risk_simulation(iterations: int = 2000):
         f"P90 completion: {percentiles['p90']}\n"
         f"Iterations: {iterations}"
     )
+    if deadline and result.probability_on_time is not None:
+        panel_text += f"\nOn-time probability (<= {deadline}): {result.probability_on_time * 100:.1f}%"
+    if milestone_deadline and result.milestone_probability is not None:
+        label = milestone_label or f"Tasks due by {milestone_deadline}"
+        panel_text += f"\n{label} on-time: {result.milestone_probability * 100:.1f}%"
+    if shock_days:
+        panel_text += f"\nDependency shock window: up to {shock_days}d"
     console.print(Panel(panel_text, title="Schedule Risk", border_style="cyan"))
 
     if result.risk_drivers:
@@ -379,6 +414,15 @@ def render_risk_simulation(iterations: int = 2000):
             )
 
         console.print(table)
+
+    if result.cost_percentiles:
+        cost_table = Table(title="Cost Forecast", show_header=True, header_style="bold green")
+        cost_table.add_column("Metric", style="white")
+        cost_table.add_column("Amount", style="yellow", justify="right")
+        cost_table.add_row("P10 Cost", f"${result.cost_percentiles['p10']:,.0f}")
+        cost_table.add_row("P50 Cost", f"${result.cost_percentiles['p50']:,.0f}")
+        cost_table.add_row("P90 Cost", f"${result.cost_percentiles['p90']:,.0f}")
+        console.print(cost_table)
 
 
 def render_focus_board(horizon_days: int = 14, limit: int = 10):
@@ -580,6 +624,72 @@ def handle_risk_command(args: list):
     render_risk_simulation(iterations)
 
 
+def handle_forecast_command(args: list):
+    """Advanced Monte Carlo forecast with optional cost/deadline modifiers."""
+    iterations = 2000
+    cost_rate = None
+    deadline = None
+    milestone = None
+    milestone_label = None
+    shock_days = 0
+
+    i = 0
+    while i < len(args):
+        token = args[i]
+        if token in ("--iterations", "-n") and i + 1 < len(args):
+            try:
+                iterations = int(args[i + 1])
+            except ValueError:
+                console.print("[red]--iterations expects an integer[/red]")
+                return
+            i += 2
+        elif token == "--cost-rate" and i + 1 < len(args):
+            try:
+                cost_rate = float(args[i + 1])
+            except ValueError:
+                console.print("[red]--cost-rate expects a number[/red]")
+                return
+            i += 2
+        elif token == "--deadline" and i + 1 < len(args):
+            try:
+                deadline = parse_date_option(args[i + 1])
+            except ValueError as exc:
+                console.print(f"[red]{exc}[/red]")
+                return
+            i += 2
+        elif token == "--milestone" and i + 1 < len(args):
+            try:
+                milestone = parse_date_option(args[i + 1])
+            except ValueError as exc:
+                console.print(f"[red]{exc}[/red]")
+                return
+            i += 2
+        elif token == "--milestone-label" and i + 1 < len(args):
+            milestone_label = args[i + 1]
+            i += 2
+        elif token == "--shock" and i + 1 < len(args):
+            try:
+                shock_days = int(args[i + 1])
+            except ValueError:
+                console.print("[red]--shock expects an integer (days)[/red]")
+                return
+            if shock_days < 0:
+                console.print("[red]--shock must be zero or positive[/red]")
+                return
+            i += 2
+        else:
+            i += 1
+
+    render_risk_simulation(
+        iterations=iterations,
+        cost_rate=cost_rate,
+        deadline=deadline,
+        milestone_deadline=milestone,
+        milestone_label=milestone_label,
+        shock_days=shock_days
+    )
+
+
 def handle_focus_command(args: list):
     """Adapter for building/showing the focus list."""
     horizon = 14
@@ -722,6 +832,8 @@ def parse_slash_command(user_input: str):
         handle_critical_path_command(args)
     elif command in ("risk", "montecarlo"):
         handle_risk_command(args)
+    elif command == "forecast":
+        handle_forecast_command(args)
     elif command == "focus":
         handle_focus_command(args)
     elif command == "log":
@@ -1051,6 +1163,41 @@ def criticalpath():
 def risk(iterations: int = typer.Option(2000, "--iterations", "-n", help="Number of Monte Carlo runs")):
     """Run Monte Carlo schedule risk simulation."""
     render_risk_simulation(iterations)
+
+
+@app.command()
+def forecast(
+    iterations: int = typer.Option(2000, "--iterations", "-n", help="Number of Monte Carlo runs"),
+    cost_rate: Optional[float] = typer.Option(None, "--cost-rate", help="Cost per day used for cost forecasting"),
+    deadline: Optional[str] = typer.Option(None, "--deadline", help="Target deadline (YYYY-MM-DD)"),
+    milestone: Optional[str] = typer.Option(None, "--milestone", help="Milestone deadline for subset probability"),
+    milestone_label: Optional[str] = typer.Option(None, "--milestone-label", help="Label for milestone probability"),
+    shock: int = typer.Option(0, "--shock", help="Maximum random delay (days) applied to dependent tasks")
+):
+    """Advanced Monte Carlo forecast with deadline, cost, and shock options."""
+    if shock < 0:
+        typer.echo("Shock must be zero or positive.")
+        raise typer.Exit(1)
+
+    deadline_date = None
+    milestone_date = None
+    try:
+        if deadline:
+            deadline_date = parse_date_option(deadline)
+        if milestone:
+            milestone_date = parse_date_option(milestone)
+    except ValueError as exc:
+        typer.echo(str(exc))
+        raise typer.Exit(1)
+
+    render_risk_simulation(
+        iterations=iterations,
+        cost_rate=cost_rate,
+        deadline=deadline_date,
+        milestone_deadline=milestone_date,
+        milestone_label=milestone_label,
+        shock_days=shock
+    )
 
 
 @app.command()
