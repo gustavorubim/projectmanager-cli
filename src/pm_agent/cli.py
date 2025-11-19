@@ -20,6 +20,10 @@ from rich.text import Text
 from rich.align import Align
 from rich import print as rprint
 from langchain_core.messages import HumanMessage
+from prompt_toolkit import PromptSession
+from prompt_toolkit.completion import Completer, Completion
+from prompt_toolkit.document import Document
+from prompt_toolkit.auto_suggest import AutoSuggestFromHistory
 
 from .agent import create_agent, run_agent
 from .analysis import (
@@ -43,6 +47,48 @@ from .viz import generate_gantt, render_text_gantt
 app = typer.Typer(help="CLI Project Manager Agent", invoke_without_command=True)
 console = Console()
 
+SLASH_COMMANDS = {
+    "status": "/status              Show task table",
+    "status --week": "/status --week       Get AI weekly summary",
+    "plan": "/plan                View the plan JSON",
+    "plan --edit": "/plan --edit         Edit plan in editor",
+    "plan --update-from-csv": "/plan --update-from-csv  Import edits from plan.csv",
+    "gantt": "/gantt               Display Gantt chart in CLI",
+    "gantt --open": "/gantt --open        Display chart and open PNG",
+    "followup": "/followup <task>     Quick add task",
+    "criticalpath": "/criticalpath        Run critical path analysis",
+    "risk": "/risk                Monte Carlo schedule risk",
+    "focus": "/focus               Build/show near-term task list",
+    "log": "/log \"...\"          Append entry to log",
+    "documentation": "/documentation       Generate Word report",
+    "artifacts": "/artifacts           List artifacts",
+    "new": "/new <project>       Create new project",
+    "archive": "/archive             Archive current project",
+    "help": "/help                Show help",
+    "exit": "/exit or /quit       Exit PM Agent",
+}
+
+
+class SlashCommandCompleter(Completer):
+    """Provide slash-command completion hints inside the REPL."""
+
+    def get_completions(self, document: Document, complete_event):
+        text = document.text_before_cursor.lstrip()
+        if not text.startswith("/"):
+            return
+
+        # Current token (without slash)
+        token = text[1:].lower()
+
+        # Propose commands that start with this token
+        for command, summary in SLASH_COMMANDS.items():
+            if command.startswith(token):
+                yield Completion(
+                    summary.split()[0],
+                    start_position=-len(text),
+                    display=summary,
+                    style="class:completion",
+                )
 
 def show_help():
     """Display help information for slash commands."""
@@ -833,6 +879,13 @@ def start_repl(project: Optional[str] = None):
     agent = create_agent()
     config = {"configurable": {"thread_id": "main"}}
 
+    # prompt_toolkit session for command history + completion
+    session = PromptSession(
+        completer=SlashCommandCompleter(),
+        auto_suggest=AutoSuggestFromHistory(),
+        complete_in_thread=True,
+    )
+
     # Show welcome message
     console.print(Panel.fit(
         "[bold cyan]Control Tower[/bold cyan] - AI-Powered Project Management\n\n"
@@ -868,8 +921,8 @@ def start_repl(project: Optional[str] = None):
     # Main REPL loop
     while True:
         try:
-            # Get user input
-            user_input = console.input("[bold cyan]>[/bold cyan] ")
+            # Get user input (with slash completion)
+            user_input = session.prompt("[bold cyan]>[/bold cyan] ")
 
             if not user_input.strip():
                 continue
