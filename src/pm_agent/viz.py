@@ -45,7 +45,9 @@ def generate_gantt():
             'Start': start,
             'End': due,
             'Status': task.status,
-            'Assignee': task.assignee or "Unassigned"
+            'Assignee': task.assignee or "Unassigned",
+            'ActualStart': task.actual_start_date,
+            'ActualEnd': task.actual_end_date,
         })
 
     df = pd.DataFrame(tasks_data)
@@ -62,6 +64,8 @@ def generate_gantt():
     }
 
     # Plot each task
+    actual_label_added = False
+
     for idx, task in df.iterrows():
         start_date = task['Start']
         end_date = task['End']
@@ -91,6 +95,29 @@ def generate_gantt():
                 fontsize=8,
                 weight='bold'
             )
+
+        actual_start = task['ActualStart']
+        actual_end = task['ActualEnd']
+        if pd.notna(actual_start) and pd.notna(actual_end):
+            if isinstance(actual_start, pd.Timestamp):
+                actual_start = actual_start.date()
+            if isinstance(actual_end, pd.Timestamp):
+                actual_end = actual_end.date()
+        if isinstance(actual_start, date) and isinstance(actual_end, date):
+            actual_duration = (actual_end - actual_start).days
+            if actual_duration <= 0:
+                actual_duration = 1
+            ax.barh(
+                idx,
+                actual_duration,
+                left=mdates.date2num(actual_start),
+                height=0.3,
+                color='none',
+                edgecolor='#f39c12',
+                linewidth=2,
+                label="Actual" if not actual_label_added else ""
+            )
+            actual_label_added = True
 
     # Format axes
     ax.set_yticks(range(len(df)))

@@ -19,6 +19,8 @@ def test_project_plan_helpers_and_lookup():
 def test_project_plan_json_serialization_handles_dates_and_lists():
     start = date(2024, 2, 1)
     due = date(2024, 2, 10)
+    actual_start = date(2024, 2, 2)
+    actual_end = date(2024, 2, 12)
     plan = ProjectPlan(
         tasks=[
             Task(
@@ -26,6 +28,8 @@ def test_project_plan_json_serialization_handles_dates_and_lists():
                 title="Prototype",
                 start_date=start,
                 due_date=due,
+                actual_start_date=actual_start,
+                actual_end_date=actual_end,
                 dependencies=[1, 2],
                 tags=["backend", "v1"],
             )
@@ -35,5 +39,7 @@ def test_project_plan_json_serialization_handles_dates_and_lists():
     payload = plan.to_json_list()
     assert payload[0]["start_date"] == start.isoformat()
     assert payload[0]["due_date"] == due.isoformat()
+    assert payload[0]["actual_start_date"] == actual_start.isoformat()
+    assert payload[0]["actual_end_date"] == actual_end.isoformat()
     assert payload[0]["dependencies"] == [1, 2]
     assert payload[0]["tags"] == ["backend", "v1"]

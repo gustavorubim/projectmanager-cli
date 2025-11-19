@@ -112,3 +112,38 @@ def test_focus_and_reporting_tools(project_root, persisted_plan):
     (artifacts_dir / "report.txt").write_text("data", encoding="utf-8")
     artifacts_list = tools.list_project_artifacts.invoke({})
     assert "artifacts/analysis/report.txt" in artifacts_list
+
+
+def test_add_task_can_capture_actual_dates(project_root):
+    tools.ensure_project_files()
+
+    tools.add_task.invoke(
+        {
+            "title": "Deploy",
+            "actual_start_date": "2024-02-01",
+            "actual_end_date": "2024-02-05",
+        }
+    )
+
+    plan = tools.load_plan()
+    task = plan.get_task(1)
+    assert task.actual_start_date == date(2024, 2, 1)
+    assert task.actual_end_date == date(2024, 2, 5)
+
+
+def test_update_task_auto_sets_actual_dates(monkeypatch, project_root):
+    tools.ensure_project_files()
+    tools.add_task.invoke({"title": "Testing"})
+
+    class FakeDate(date):
+        @classmethod
+        def today(cls):  # type: ignore[override]
+            return cls(2024, 3, 10)
+
+    monkeypatch.setattr(tools, "date", FakeDate)
+
+    tools.update_task.invoke({"task_id": 1, "status": "done"})
+    plan = tools.load_plan()
+    task = plan.get_task(1)
+    assert task.actual_start_date == date(2024, 3, 10)
+    assert task.actual_end_date == date(2024, 3, 10)

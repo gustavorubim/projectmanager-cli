@@ -13,6 +13,8 @@ class Task(BaseModel):
     assignee: Optional[str] = None
     start_date: Optional[date] = None
     due_date: Optional[date] = None
+    actual_start_date: Optional[date] = None
+    actual_end_date: Optional[date] = None
     status: str = "todo"  # todo, in_progress, done, blocked
     dependencies: List[int] = Field(default_factory=list)
     optimistic_days: Optional[int] = None
@@ -62,6 +64,8 @@ class ProjectPlan(BaseModel):
                 "due_date": task.due_date.isoformat() if task.due_date else None,
                 "status": task.status,
                 "dependencies": task.dependencies,
+                "actual_start_date": task.actual_start_date.isoformat() if task.actual_start_date else None,
+                "actual_end_date": task.actual_end_date.isoformat() if task.actual_end_date else None,
                 "optimistic_days": task.optimistic_days,
                 "likely_days": task.likely_days,
                 "pessimistic_days": task.pessimistic_days,

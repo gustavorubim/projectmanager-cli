@@ -27,6 +27,8 @@ PLAN_CSV_FIELDS = [
     "assignee",
     "start_date",
     "due_date",
+    "actual_start_date",
+    "actual_end_date",
     "status",
     "dependencies",
     "optimistic_days",
@@ -134,6 +136,18 @@ def _parse_iso_date(label: str, value: Optional[str]) -> Optional[date]:
         ) from exc
 
 
+def _apply_actual_tracking(task: Task, previous_status: Optional[str] = None):
+    """Auto-capture actual start/end dates based on status changes."""
+    today = date.today()
+    status = task.status
+
+    if status in {"in_progress", "done"} and task.actual_start_date is None:
+        task.actual_start_date = today
+
+    if status == "done" and task.actual_end_date is None:
+        task.actual_end_date = today
+
+
 def _plan_from_data(data: List[dict]) -> ProjectPlan:
     """Create a ProjectPlan instance from JSON-compatible list."""
     tasks = []
@@ -142,6 +156,10 @@ def _plan_from_data(data: List[dict]) -> ProjectPlan:
             task_data["start_date"] = date.fromisoformat(task_data["start_date"])
         if task_data.get("due_date"):
             task_data["due_date"] = date.fromisoformat(task_data["due_date"])
+        if task_data.get("actual_start_date"):
+            task_data["actual_start_date"] = date.fromisoformat(task_data["actual_start_date"])
+        if task_data.get("actual_end_date"):
+            task_data["actual_end_date"] = date.fromisoformat(task_data["actual_end_date"])
         tasks.append(Task(**task_data))
     return ProjectPlan(tasks=tasks)
 
@@ -261,6 +279,8 @@ def export_plan_to_csv(plan: ProjectPlan, csv_file: Optional[str] = None):
                 "assignee": task.assignee or "",
                 "start_date": task.start_date.isoformat() if task.start_date else "",
                 "due_date": task.due_date.isoformat() if task.due_date else "",
+                "actual_start_date": task.actual_start_date.isoformat() if task.actual_start_date else "",
+                "actual_end_date": task.actual_end_date.isoformat() if task.actual_end_date else "",
                 "status": task.status,
                 "dependencies": ",".join(str(dep) for dep in task.dependencies),
                 "optimistic_days": task.optimistic_days or "",
@@ -346,6 +366,8 @@ def import_plan_from_csv(csv_file: Optional[str] = None) -> ProjectPlan:
                 assignee=row.get("assignee") or None,
                 start_date=parse_date(row.get("start_date")),
                 due_date=parse_date(row.get("due_date")),
+                actual_start_date=parse_date(row.get("actual_start_date")),
+                actual_end_date=parse_date(row.get("actual_end_date")),
                 status=(row.get("status") or "todo").strip() or "todo",
                 dependencies=dependencies,
                 optimistic_days=parse_int(row.get("optimistic_days")),
@@ -439,6 +461,8 @@ def add_task(
     assignee: Optional[str] = None,
     due_date: Optional[str] = None,
     start_date: Optional[str] = None,
+    actual_start_date: Optional[str] = None,
+    actual_end_date: Optional[str] = None,
     status: str = "todo",
     dependencies: Optional[List[int]] = None
 ) -> str:
@@ -451,6 +475,8 @@ def add_task(
         start_date: Start date in YYYY-MM-DD format
         status: Task status (todo, in_progress, done, blocked)
         dependencies: List of task IDs this task depends on
+        actual_start_date: Actual work start date (optional, YYYY-MM-DD)
+        actual_end_date: Actual completion date (optional, YYYY-MM-DD)
 
     Returns:
         Confirmation message with the new task ID
@@ -462,6 +488,8 @@ def add_task(
     try:
         parsed_start = _parse_iso_date("start", start_date)
         parsed_due = _parse_iso_date("due", due_date)
+        parsed_actual_start = _parse_iso_date("actual start", actual_start_date)
+        parsed_actual_end = _parse_iso_date("actual end", actual_end_date)
     except ValueError as exc:
         return f"Error: {exc}"
 
@@ -471,9 +499,13 @@ def add_task(
         assignee=assignee,
         start_date=parsed_start,
         due_date=parsed_due,
+        actual_start_date=parsed_actual_start,
+        actual_end_date=parsed_actual_end,
         status=status,
         dependencies=dependencies or []
     )
+
+    _apply_actual_tracking(task)
 
     plan.tasks.append(task)
     save_plan(plan)
@@ -492,6 +524,8 @@ def update_task(
     assignee: Optional[str] = None,
     due_date: Optional[str] = None,
     start_date: Optional[str] = None,
+    actual_start_date: Optional[str] = None,
+    actual_end_date: Optional[str] = None,
     status: Optional[str] = None,
     dependencies: Optional[List[int]] = None
 ) -> str:
@@ -504,6 +538,8 @@ def update_task(
         due_date: New due date in YYYY-MM-DD format (optional)
         start_date: New start date in YYYY-MM-DD format (optional)
         status: New status (optional)
+        actual_start_date: Override actual start date (optional)
+        actual_end_date: Override actual completion date (optional)
         dependencies: New dependencies list (optional)
 
     Returns:
@@ -519,17 +555,26 @@ def update_task(
         task.title = title
     if assignee is not None:
         task.assignee = assignee
+
+    previous_status = task.status
+
     try:
         if start_date is not None:
             task.start_date = _parse_iso_date("start", start_date)
         if due_date is not None:
             task.due_date = _parse_iso_date("due", due_date)
+        if actual_start_date is not None:
+            task.actual_start_date = _parse_iso_date("actual start", actual_start_date)
+        if actual_end_date is not None:
+            task.actual_end_date = _parse_iso_date("actual end", actual_end_date)
     except ValueError as exc:
         return f"Error: {exc}"
     if status is not None:
         task.status = status
     if dependencies is not None:
         task.dependencies = dependencies
+
+    _apply_actual_tracking(task, previous_status=previous_status)
 
     save_plan(plan)
 

@@ -137,6 +137,10 @@ my-project/
 └── .pm/                        # Agent memory (SQLite)
 ```
 
+### Planned vs Actual Tracking
+
+Each task stores both planned (`start_date`/`due_date`) and actual (`actual_start_date`/`actual_end_date`) dates. When you run `pm gantt --open`, the chart overlays the actual timeline (orange outline) on top of the baseline plan so you can immediately see over/under performance.
+
 ### 2. Inside PM Agent REPL
 
 Once inside (after running `pm`), you can:

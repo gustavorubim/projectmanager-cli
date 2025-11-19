@@ -5,8 +5,10 @@
     "assignee": "Program Leadership & PMO",
     "start_date": "2025-11-19",
     "due_date": "2025-11-26",
-    "status": "todo",
+    "status": "done",
     "dependencies": [],
+    "actual_start_date": "2025-11-19",
+    "actual_end_date": "2025-11-19",
     "optimistic_days": null,
     "likely_days": null,
     "pessimistic_days": null,
@@ -25,10 +27,12 @@
     "assignee": "Program Leadership & PMO",
     "start_date": "2025-11-26",
     "due_date": "2025-12-03",
-    "status": "todo",
+    "status": "done",
     "dependencies": [
       1
     ],
+    "actual_start_date": "2025-11-19",
+    "actual_end_date": "2025-12-10",
     "optimistic_days": null,
     "likely_days": null,
     "pessimistic_days": null,
@@ -47,10 +51,12 @@
     "assignee": "AI Platform Engineering",
     "start_date": "2025-11-26",
     "due_date": "2025-12-03",
-    "status": "todo",
+    "status": "done",
     "dependencies": [
       1
     ],
+    "actual_start_date": "2025-11-19",
+    "actual_end_date": "2025-11-26",
     "optimistic_days": null,
     "likely_days": null,
     "pessimistic_days": null,
@@ -74,6 +80,8 @@
       2,
       3
     ],
+    "actual_start_date": null,
+    "actual_end_date": null,
     "optimistic_days": null,
     "likely_days": null,
     "pessimistic_days": null,
@@ -96,6 +104,8 @@
     "dependencies": [
       2
     ],
+    "actual_start_date": null,
+    "actual_end_date": null,
     "optimistic_days": null,
     "likely_days": null,
     "pessimistic_days": null,
@@ -118,6 +128,8 @@
     "dependencies": [
       2
     ],
+    "actual_start_date": null,
+    "actual_end_date": null,
     "optimistic_days": null,
     "likely_days": null,
     "pessimistic_days": null,
@@ -140,6 +152,8 @@
     "dependencies": [
       2
     ],
+    "actual_start_date": null,
+    "actual_end_date": null,
     "optimistic_days": null,
     "likely_days": null,
     "pessimistic_days": null,
@@ -162,6 +176,8 @@
     "dependencies": [
       38
     ],
+    "actual_start_date": null,
+    "actual_end_date": null,
     "optimistic_days": null,
     "likely_days": null,
     "pessimistic_days": null,
@@ -184,6 +200,8 @@
     "dependencies": [
       43
     ],
+    "actual_start_date": null,
+    "actual_end_date": null,
     "optimistic_days": null,
     "likely_days": null,
     "pessimistic_days": null,
@@ -206,6 +224,8 @@
     "dependencies": [
       48
     ],
+    "actual_start_date": null,
+    "actual_end_date": null,
     "optimistic_days": null,
     "likely_days": null,
     "pessimistic_days": null,
@@ -228,6 +248,8 @@
     "dependencies": [
       80
     ],
+    "actual_start_date": null,
+    "actual_end_date": null,
     "optimistic_days": null,
     "likely_days": null,
     "pessimistic_days": null,
@@ -250,6 +272,8 @@
     "dependencies": [
       31
     ],
+    "actual_start_date": null,
+    "actual_end_date": null,
     "optimistic_days": null,
     "likely_days": null,
     "pessimistic_days": null,
@@ -274,6 +298,8 @@
       53,
       58
     ],
+    "actual_start_date": null,
+    "actual_end_date": null,
     "optimistic_days": null,
     "likely_days": null,
     "pessimistic_days": null,
@@ -301,6 +327,8 @@
       82,
       83
     ],
+    "actual_start_date": null,
+    "actual_end_date": null,
     "optimistic_days": null,
     "likely_days": null,
     "pessimistic_days": null,
@@ -324,6 +352,8 @@
       84,
       78
     ],
+    "actual_start_date": null,
+    "actual_end_date": null,
     "optimistic_days": null,
     "likely_days": null,
     "pessimistic_days": null,
@@ -347,6 +377,8 @@
       62,
       31
     ],
+    "actual_start_date": null,
+    "actual_end_date": null,
     "optimistic_days": null,
     "likely_days": null,
     "pessimistic_days": null,
@@ -372,6 +404,8 @@
       12,
       63
     ],
+    "actual_start_date": null,
+    "actual_end_date": null,
     "optimistic_days": null,
     "likely_days": null,
     "pessimistic_days": null,
@@ -396,6 +430,8 @@
       22,
       63
     ],
+    "actual_start_date": null,
+    "actual_end_date": null,
     "optimistic_days": null,
     "likely_days": null,
     "pessimistic_days": null,
@@ -420,6 +456,8 @@
       17,
       18
     ],
+    "actual_start_date": null,
+    "actual_end_date": null,
     "optimistic_days": null,
     "likely_days": null,
     "pessimistic_days": null,
@@ -444,6 +482,8 @@
       17,
       18
     ],
+    "actual_start_date": null,
+    "actual_end_date": null,
     "optimistic_days": null,
     "likely_days": null,
     "pessimistic_days": null,
@@ -468,6 +508,8 @@
       17,
       18
     ],
+    "actual_start_date": null,
+    "actual_end_date": null,
     "optimistic_days": null,
     "likely_days": null,
     "pessimistic_days": null,
@@ -490,6 +532,8 @@
     "dependencies": [
       4
     ],
+    "actual_start_date": null,
+    "actual_end_date": null,
     "optimistic_days": null,
     "likely_days": null,
     "pessimistic_days": null,
@@ -512,6 +556,8 @@
     "dependencies": [
       5
     ],
+    "actual_start_date": null,
+    "actual_end_date": null,
     "optimistic_days": null,
     "likely_days": null,
     "pessimistic_days": null,
@@ -534,6 +580,8 @@
     "dependencies": [
       3
     ],
+    "actual_start_date": null,
+    "actual_end_date": null,
     "optimistic_days": null,
     "likely_days": null,
     "pessimistic_days": null,
@@ -556,6 +604,8 @@
     "dependencies": [
       8
     ],
+    "actual_start_date": null,
+    "actual_end_date": null,
     "optimistic_days": null,
     "likely_days": null,
     "pessimistic_days": null,
@@ -578,6 +628,8 @@
     "dependencies": [
       8
     ],
+    "actual_start_date": null,
+    "actual_end_date": null,
     "optimistic_days": null,
     "likely_days": null,
     "pessimistic_days": null,
@@ -600,6 +652,8 @@
     "dependencies": [
       9
     ],
+    "actual_start_date": null,
+    "actual_end_date": null,
     "optimistic_days": null,
     "likely_days": null,
     "pessimistic_days": null,
@@ -622,6 +676,8 @@
     "dependencies": [
       9
     ],
+    "actual_start_date": null,
+    "actual_end_date": null,
     "optimistic_days": null,
     "likely_days": null,
     "pessimistic_days": null,
@@ -644,6 +700,8 @@
     "dependencies": [
       10
     ],
+    "actual_start_date": null,
+    "actual_end_date": null,
     "optimistic_days": null,
     "likely_days": null,
     "pessimistic_days": null,
@@ -666,6 +724,8 @@
     "dependencies": [
       11
     ],
+    "actual_start_date": null,
+    "actual_end_date": null,
     "optimistic_days": null,
     "likely_days": null,
     "pessimistic_days": null,
@@ -688,6 +748,8 @@
     "dependencies": [
       12
     ],
+    "actual_start_date": null,
+    "actual_end_date": null,
     "optimistic_days": null,
     "likely_days": null,
     "pessimistic_days": null,
@@ -713,6 +775,8 @@
       6,
       7
     ],
+    "actual_start_date": null,
+    "actual_end_date": null,
     "optimistic_days": null,
     "likely_days": null,
     "pessimistic_days": null,
@@ -738,6 +802,8 @@
       6,
       7
     ],
+    "actual_start_date": null,
+    "actual_end_date": null,
     "optimistic_days": null,
     "likely_days": null,
     "pessimistic_days": null,
@@ -760,6 +826,8 @@
     "dependencies": [
       8
     ],
+    "actual_start_date": null,
+    "actual_end_date": null,
     "optimistic_days": null,
     "likely_days": null,
     "pessimistic_days": null,
@@ -784,6 +852,8 @@
       25,
       26
     ],
+    "actual_start_date": null,
+    "actual_end_date": null,
     "optimistic_days": null,
     "likely_days": null,
     "pessimistic_days": null,
@@ -806,6 +876,8 @@
     "dependencies": [
       36
     ],
+    "actual_start_date": null,
+    "actual_end_date": null,
     "optimistic_days": null,
     "likely_days": null,
     "pessimistic_days": null,
@@ -828,6 +900,8 @@
     "dependencies": [
       37
     ],
+    "actual_start_date": null,
+    "actual_end_date": null,
     "optimistic_days": null,
     "likely_days": null,
     "pessimistic_days": null,
@@ -850,6 +924,8 @@
     "dependencies": [
       38
     ],
+    "actual_start_date": null,
+    "actual_end_date": null,
     "optimistic_days": null,
     "likely_days": null,
     "pessimistic_days": null,
@@ -872,6 +948,8 @@
     "dependencies": [
       9
     ],
+    "actual_start_date": null,
+    "actual_end_date": null,
     "optimistic_days": null,
     "likely_days": null,
     "pessimistic_days": null,
@@ -896,6 +974,8 @@
       27,
       28
     ],
+    "actual_start_date": null,
+    "actual_end_date": null,
     "optimistic_days": null,
     "likely_days": null,
     "pessimistic_days": null,
@@ -918,6 +998,8 @@
     "dependencies": [
       42
     ],
+    "actual_start_date": null,
+    "actual_end_date": null,
     "optimistic_days": null,
     "likely_days": null,
     "pessimistic_days": null,
@@ -940,6 +1022,8 @@
     "dependencies": [
       43
     ],
+    "actual_start_date": null,
+    "actual_end_date": null,
     "optimistic_days": null,
     "likely_days": null,
     "pessimistic_days": null,
@@ -962,6 +1046,8 @@
     "dependencies": [
       44
     ],
+    "actual_start_date": null,
+    "actual_end_date": null,
     "optimistic_days": null,
     "likely_days": null,
     "pessimistic_days": null,
@@ -984,6 +1070,8 @@
     "dependencies": [
       10
     ],
+    "actual_start_date": null,
+    "actual_end_date": null,
     "optimistic_days": null,
     "likely_days": null,
     "pessimistic_days": null,
@@ -1007,6 +1095,8 @@
       47,
       29
     ],
+    "actual_start_date": null,
+    "actual_end_date": null,
     "optimistic_days": null,
     "likely_days": null,
     "pessimistic_days": null,
@@ -1029,6 +1119,8 @@
     "dependencies": [
       48
     ],
+    "actual_start_date": null,
+    "actual_end_date": null,
     "optimistic_days": null,
     "likely_days": null,
     "pessimistic_days": null,
@@ -1051,6 +1143,8 @@
     "dependencies": [
       49
     ],
+    "actual_start_date": null,
+    "actual_end_date": null,
     "optimistic_days": null,
     "likely_days": null,
     "pessimistic_days": null,
@@ -1073,6 +1167,8 @@
     "dependencies": [
       50
     ],
+    "actual_start_date": null,
+    "actual_end_date": null,
     "optimistic_days": null,
     "likely_days": null,
     "pessimistic_days": null,
@@ -1095,6 +1191,8 @@
     "dependencies": [
       32
     ],
+    "actual_start_date": null,
+    "actual_end_date": null,
     "optimistic_days": null,
     "likely_days": null,
     "pessimistic_days": null,
@@ -1117,6 +1215,8 @@
     "dependencies": [
       52
     ],
+    "actual_start_date": null,
+    "actual_end_date": null,
     "optimistic_days": null,
     "likely_days": null,
     "pessimistic_days": null,
@@ -1139,6 +1239,8 @@
     "dependencies": [
       53
     ],
+    "actual_start_date": null,
+    "actual_end_date": null,
     "optimistic_days": null,
     "likely_days": null,
     "pessimistic_days": null,
@@ -1161,6 +1263,8 @@
     "dependencies": [
       54
     ],
+    "actual_start_date": null,
+    "actual_end_date": null,
     "optimistic_days": null,
     "likely_days": null,
     "pessimistic_days": null,
@@ -1183,6 +1287,8 @@
     "dependencies": [
       55
     ],
+    "actual_start_date": null,
+    "actual_end_date": null,
     "optimistic_days": null,
     "likely_days": null,
     "pessimistic_days": null,
@@ -1205,6 +1311,8 @@
     "dependencies": [
       33
     ],
+    "actual_start_date": null,
+    "actual_end_date": null,
     "optimistic_days": null,
     "likely_days": null,
     "pessimistic_days": null,
@@ -1227,6 +1335,8 @@
     "dependencies": [
       57
     ],
+    "actual_start_date": null,
+    "actual_end_date": null,
     "optimistic_days": null,
     "likely_days": null,
     "pessimistic_days": null,
@@ -1249,6 +1359,8 @@
     "dependencies": [
       58
     ],
+    "actual_start_date": null,
+    "actual_end_date": null,
     "optimistic_days": null,
     "likely_days": null,
     "pessimistic_days": null,
@@ -1271,6 +1383,8 @@
     "dependencies": [
       59
     ],
+    "actual_start_date": null,
+    "actual_end_date": null,
     "optimistic_days": null,
     "likely_days": null,
     "pessimistic_days": null,
@@ -1293,6 +1407,8 @@
     "dependencies": [
       60
     ],
+    "actual_start_date": null,
+    "actual_end_date": null,
     "optimistic_days": null,
     "likely_days": null,
     "pessimistic_days": null,
@@ -1315,6 +1431,8 @@
     "dependencies": [
       7
     ],
+    "actual_start_date": null,
+    "actual_end_date": null,
     "optimistic_days": null,
     "likely_days": null,
     "pessimistic_days": null,
@@ -1337,6 +1455,8 @@
     "dependencies": [
       7
     ],
+    "actual_start_date": null,
+    "actual_end_date": null,
     "optimistic_days": null,
     "likely_days": null,
     "pessimistic_days": null,
@@ -1359,6 +1479,8 @@
     "dependencies": [
       7
     ],
+    "actual_start_date": null,
+    "actual_end_date": null,
     "optimistic_days": null,
     "likely_days": null,
     "pessimistic_days": null,
@@ -1381,6 +1503,8 @@
     "dependencies": [
       11
     ],
+    "actual_start_date": null,
+    "actual_end_date": null,
     "optimistic_days": null,
     "likely_days": null,
     "pessimistic_days": null,
@@ -1403,6 +1527,8 @@
     "dependencies": [
       68
     ],
+    "actual_start_date": null,
+    "actual_end_date": null,
     "optimistic_days": null,
     "likely_days": null,
     "pessimistic_days": null,
@@ -1425,6 +1551,8 @@
     "dependencies": [
       38
     ],
+    "actual_start_date": null,
+    "actual_end_date": null,
     "optimistic_days": null,
     "likely_days": null,
     "pessimistic_days": null,
@@ -1447,6 +1575,8 @@
     "dependencies": [
       45
     ],
+    "actual_start_date": null,
+    "actual_end_date": null,
     "optimistic_days": null,
     "likely_days": null,
     "pessimistic_days": null,
@@ -1469,6 +1599,8 @@
     "dependencies": [
       51
     ],
+    "actual_start_date": null,
+    "actual_end_date": null,
     "optimistic_days": null,
     "likely_days": null,
     "pessimistic_days": null,
@@ -1491,6 +1623,8 @@
     "dependencies": [
       2
     ],
+    "actual_start_date": null,
+    "actual_end_date": null,
     "optimistic_days": null,
     "likely_days": null,
     "pessimistic_days": null,
@@ -1513,6 +1647,8 @@
     "dependencies": [
       6
     ],
+    "actual_start_date": null,
+    "actual_end_date": null,
     "optimistic_days": null,
     "likely_days": null,
     "pessimistic_days": null,
@@ -1535,6 +1671,8 @@
     "dependencies": [
       76
     ],
+    "actual_start_date": null,
+    "actual_end_date": null,
     "optimistic_days": null,
     "likely_days": null,
     "pessimistic_days": null,
@@ -1557,6 +1695,8 @@
     "dependencies": [
       77
     ],
+    "actual_start_date": null,
+    "actual_end_date": null,
     "optimistic_days": null,
     "likely_days": null,
     "pessimistic_days": null,
@@ -1579,6 +1719,8 @@
     "dependencies": [
       79
     ],
+    "actual_start_date": null,
+    "actual_end_date": null,
     "optimistic_days": null,
     "likely_days": null,
     "pessimistic_days": null,
@@ -1599,6 +1741,8 @@
     "due_date": "2025-11-26",
     "status": "todo",
     "dependencies": [],
+    "actual_start_date": null,
+    "actual_end_date": null,
     "optimistic_days": null,
     "likely_days": null,
     "pessimistic_days": null,
@@ -1619,6 +1763,8 @@
     "due_date": "2025-12-03",
     "status": "todo",
     "dependencies": [],
+    "actual_start_date": null,
+    "actual_end_date": null,
     "optimistic_days": null,
     "likely_days": null,
     "pessimistic_days": null,
@@ -1639,6 +1785,8 @@
     "due_date": "2025-12-19",
     "status": "todo",
     "dependencies": [],
+    "actual_start_date": null,
+    "actual_end_date": null,
     "optimistic_days": null,
     "likely_days": null,
     "pessimistic_days": null,
@@ -1659,6 +1807,8 @@
     "due_date": "2025-12-03",
     "status": "todo",
     "dependencies": [],
+    "actual_start_date": null,
+    "actual_end_date": null,
     "optimistic_days": null,
     "likely_days": null,
     "pessimistic_days": null,
@@ -1681,6 +1831,8 @@
     "dependencies": [
       34
     ],
+    "actual_start_date": null,
+    "actual_end_date": null,
     "optimistic_days": null,
     "likely_days": null,
     "pessimistic_days": null,
@@ -1703,6 +1855,8 @@
     "dependencies": [
       39
     ],
+    "actual_start_date": null,
+    "actual_end_date": null,
     "optimistic_days": null,
     "likely_days": null,
     "pessimistic_days": null,
@@ -1725,6 +1879,8 @@
     "dependencies": [
       44
     ],
+    "actual_start_date": null,
+    "actual_end_date": null,
     "optimistic_days": null,
     "likely_days": null,
     "pessimistic_days": null,
@@ -1747,6 +1903,8 @@
     "dependencies": [
       7
     ],
+    "actual_start_date": null,
+    "actual_end_date": null,
     "optimistic_days": null,
     "likely_days": null,
     "pessimistic_days": null,
@@ -1769,6 +1927,8 @@
     "dependencies": [
       11
     ],
+    "actual_start_date": null,
+    "actual_end_date": null,
     "optimistic_days": null,
     "likely_days": null,
     "pessimistic_days": null,
@@ -1791,6 +1951,8 @@
     "dependencies": [
       23
     ],
+    "actual_start_date": null,
+    "actual_end_date": null,
     "optimistic_days": null,
     "likely_days": null,
     "pessimistic_days": null,
@@ -1813,6 +1975,8 @@
     "dependencies": [
       67
     ],
+    "actual_start_date": null,
+    "actual_end_date": null,
     "optimistic_days": null,
     "likely_days": null,
     "pessimistic_days": null,
@@ -1835,6 +1999,8 @@
     "dependencies": [
       67
     ],
+    "actual_start_date": null,
+    "actual_end_date": null,
     "optimistic_days": null,
     "likely_days": null,
     "pessimistic_days": null,
@@ -1857,6 +2023,8 @@
     "dependencies": [
       6
     ],
+    "actual_start_date": null,
+    "actual_end_date": null,
     "optimistic_days": null,
     "likely_days": null,
     "pessimistic_days": null,
