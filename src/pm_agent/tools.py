@@ -470,8 +470,6 @@ def update_task(
 
     return f"Task #{task_id} updated successfully."
 
-
-@tool
 def append_log(content: str) -> str:
     """Append a timestamped entry to the decision log.
 
@@ -491,6 +489,9 @@ def append_log(content: str) -> str:
         f.write(entry)
 
     return "Log entry added successfully."
+
+
+append_log_tool = tool(append_log)
 
 
 @tool
@@ -651,7 +652,7 @@ TOOLS = [
     read_plan,
     add_task,
     update_task,
-    append_log,
+    append_log_tool,
     write_file,
     focus_overview,
     critical_path_snapshot,
