@@ -1,6 +1,10 @@
 """Visualization tools for generating Gantt charts."""
 
 import warnings
+import matplotlib
+
+matplotlib.use("Agg")
+
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 from datetime import datetime, timedelta, date

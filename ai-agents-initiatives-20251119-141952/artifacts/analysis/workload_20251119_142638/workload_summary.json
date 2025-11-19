@@ -1,0 +1,321 @@
+{
+  "generated_at": "2025-11-19T14:26:38.735466",
+  "priority_backlog": [
+    {
+      "id": 1,
+      "title": "Charter Approval and Funding Secured",
+      "priority": null,
+      "assignee": "Program Leadership & PMO",
+      "due_date": "2025-11-26",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 2,
+      "title": "Team Staffing and Onboarding",
+      "priority": null,
+      "assignee": "Program Leadership & PMO",
+      "due_date": "2025-12-03",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 3,
+      "title": "GPU Capacity Reservation",
+      "priority": null,
+      "assignee": "AI Platform Engineering",
+      "due_date": "2025-12-03",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 22,
+      "title": "Develop Agent Fabric Orchestration Layer",
+      "priority": null,
+      "assignee": "AI Platform Engineering",
+      "due_date": "2026-01-15",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 4,
+      "title": "Agent Fabric MVP Development",
+      "priority": null,
+      "assignee": "AI Platform Engineering",
+      "due_date": "2026-01-31",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 5,
+      "title": "IAM Integration",
+      "priority": null,
+      "assignee": "Security, Risk & Compliance",
+      "due_date": "2026-01-31",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 6,
+      "title": "Observability Baseline Setup",
+      "priority": null,
+      "assignee": "AI Platform Engineering",
+      "due_date": "2026-01-31",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 7,
+      "title": "Initial Connectors Development",
+      "priority": null,
+      "assignee": "AI Platform Engineering",
+      "due_date": "2026-01-31",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 23,
+      "title": "Implement Identity-Aware Policy Engine",
+      "priority": null,
+      "assignee": "Security, Risk & Compliance",
+      "due_date": "2026-01-31",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 24,
+      "title": "Setup Prompt Evaluation Lab",
+      "priority": null,
+      "assignee": "Applied Research / Prompt Ops",
+      "due_date": "2026-01-31",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 25,
+      "title": "Develop ITSM Connector for Support Playbook",
+      "priority": null,
+      "assignee": "Domain Squads",
+      "due_date": "2026-02-15",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 26,
+      "title": "Clean Up Knowledge Base for Support Playbook",
+      "priority": null,
+      "assignee": "Domain Squads",
+      "due_date": "2026-02-15",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 27,
+      "title": "Develop SRE Workflows for Infra Ops Playbook",
+      "priority": null,
+      "assignee": "Domain Squads",
+      "due_date": "2026-02-15",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 28,
+      "title": "Implement On-Call API Hooks for Infra Ops Playbook",
+      "priority": null,
+      "assignee": "Domain Squads",
+      "due_date": "2026-02-15",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 29,
+      "title": "Modernize ERP API for Finance Playbook",
+      "priority": null,
+      "assignee": "Domain Squads",
+      "due_date": "2026-02-15",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 30,
+      "title": "Conduct Legal/Privacy Review for Model Risk Framework",
+      "priority": null,
+      "assignee": "Security, Risk & Compliance",
+      "due_date": "2026-03-15",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 31,
+      "title": "Develop SOC2-Ready Logging System",
+      "priority": null,
+      "assignee": "AI Platform Engineering",
+      "due_date": "2026-03-15",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 8,
+      "title": "Support L1 Triage Playbook Development",
+      "priority": null,
+      "assignee": "Domain Squads",
+      "due_date": "2026-03-31",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 9,
+      "title": "Infra Ops Buddy Playbook Development",
+      "priority": null,
+      "assignee": "Domain Squads",
+      "due_date": "2026-03-31",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 10,
+      "title": "Finance Quote-to-Cash Co-Pilot Development",
+      "priority": null,
+      "assignee": "Domain Squads",
+      "due_date": "2026-03-31",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 11,
+      "title": "Red-Team Exercises",
+      "priority": null,
+      "assignee": "Security, Risk & Compliance",
+      "due_date": "2026-03-31",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 12,
+      "title": "SOC2 Logging Implementation",
+      "priority": null,
+      "assignee": "Security, Risk & Compliance",
+      "due_date": "2026-03-31",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 13,
+      "title": "Finance & Marketing Playbooks Deployment",
+      "priority": null,
+      "assignee": "Domain Squads",
+      "due_date": "2026-05-31",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 14,
+      "title": "Enablement and Training Sessions",
+      "priority": null,
+      "assignee": "Enablement & Training",
+      "due_date": "2026-05-31",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 15,
+      "title": "Adoption Dashboards Development",
+      "priority": null,
+      "assignee": "Enablement & Training",
+      "due_date": "2026-05-31",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 16,
+      "title": "Compliance Agent & Audit Reporting",
+      "priority": null,
+      "assignee": "Security, Risk & Compliance",
+      "due_date": "2026-07-31",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 17,
+      "title": "Governance Sign-Offs",
+      "priority": null,
+      "assignee": "Security, Risk & Compliance",
+      "due_date": "2026-07-31",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 18,
+      "title": "Self-Service Workflow Builder GA",
+      "priority": null,
+      "assignee": "AI Platform Engineering",
+      "due_date": "2026-07-31",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 19,
+      "title": "Enterprise Rollout",
+      "priority": null,
+      "assignee": "Program Leadership & PMO",
+      "due_date": "2026-09-30",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 20,
+      "title": "Performance Tuning",
+      "priority": null,
+      "assignee": "AI Platform Engineering",
+      "due_date": "2026-09-30",
+      "effort_points": null,
+      "risk_level": null
+    },
+    {
+      "id": 21,
+      "title": "Steady-State Operations Handoff",
+      "priority": null,
+      "assignee": "Program Leadership & PMO",
+      "due_date": "2026-09-30",
+      "effort_points": null,
+      "risk_level": null
+    }
+  ],
+  "workload": {
+    "Program Leadership & PMO": {
+      "tasks": 4,
+      "effort": 0.0,
+      "high": 0
+    },
+    "AI Platform Engineering": {
+      "tasks": 8,
+      "effort": 0.0,
+      "high": 0
+    },
+    "Security, Risk & Compliance": {
+      "tasks": 7,
+      "effort": 0.0,
+      "high": 0
+    },
+    "Domain Squads": {
+      "tasks": 9,
+      "effort": 0.0,
+      "high": 0
+    },
+    "Enablement & Training": {
+      "tasks": 2,
+      "effort": 0.0,
+      "high": 0
+    },
+    "Applied Research / Prompt Ops": {
+      "tasks": 1,
+      "effort": 0.0,
+      "high": 0
+    }
+  },
+  "risk_counts": {
+    "Unspecified": 31
+  },
+  "okr_counts": {},
+  "priority_gaps": []
+}
