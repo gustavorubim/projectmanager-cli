@@ -2,7 +2,7 @@
   {
     "id": 1,
     "title": "Charter Approval and Funding Secured",
-    "assignee": "Program Leadership & PMO",
+    "assignee": "Mark",
     "start_date": "2025-11-19",
     "due_date": "2025-11-26",
     "status": "done",
@@ -24,7 +24,7 @@
   {
     "id": 2,
     "title": "Team Staffing and Onboarding",
-    "assignee": "Program Leadership & PMO",
+    "assignee": "Mark",
     "start_date": "2025-11-26",
     "due_date": "2025-12-03",
     "status": "done",
@@ -447,7 +447,7 @@
   {
     "id": 19,
     "title": "Enterprise Rollout",
-    "assignee": "Program Leadership & PMO",
+    "assignee": "Mark",
     "start_date": "2026-08-01",
     "due_date": "2026-09-30",
     "status": "todo",
@@ -499,7 +499,7 @@
   {
     "id": 21,
     "title": "Steady-State Operations Handoff",
-    "assignee": "Program Leadership & PMO",
+    "assignee": "Mark",
     "start_date": "2026-08-01",
     "due_date": "2026-09-30",
     "status": "todo",
@@ -1401,7 +1401,7 @@
     "id": 58,
     "title": "Marketing Ops Co-Pilot UAT & Pilot Deployment",
     "assignee": "Domain Squads",
-    "start_date": "2026-05-23",
+    "start_date": "2026-05-28",
     "due_date": "2026-05-31",
     "status": "todo",
     "dependencies": [
@@ -1712,7 +1712,7 @@
   {
     "id": 71,
     "title": "Regular KPI Reporting & Review Cycles",
-    "assignee": "Program Leadership & PMO",
+    "assignee": "Mark",
     "start_date": "2026-03-23",
     "due_date": "2026-03-31",
     "status": "todo",
@@ -1736,7 +1736,7 @@
   {
     "id": 72,
     "title": "Weekly PMO Updates",
-    "assignee": "Program Leadership & PMO",
+    "assignee": "Mark",
     "start_date": "2025-11-19",
     "due_date": "2025-11-26",
     "status": "todo",
@@ -1758,7 +1758,7 @@
   {
     "id": 73,
     "title": "Bi-weekly Steering Committee Meetings",
-    "assignee": "Program Leadership & PMO",
+    "assignee": "Mark",
     "start_date": "2025-11-26",
     "due_date": "2025-12-03",
     "status": "todo",
@@ -1780,7 +1780,7 @@
   {
     "id": 74,
     "title": "Monthly All-Hands Demo & KPI Review",
-    "assignee": "Program Leadership & PMO",
+    "assignee": "Mark",
     "start_date": "2025-12-12",
     "due_date": "2025-12-19",
     "status": "todo",
@@ -1802,7 +1802,7 @@
   {
     "id": 75,
     "title": "Ongoing Risk Monitoring and Mitigation Planning",
-    "assignee": "Program Leadership & PMO",
+    "assignee": "Mark",
     "start_date": "2025-11-26",
     "due_date": "2025-12-03",
     "status": "todo",
@@ -2016,9 +2016,9 @@
   {
     "id": 84,
     "title": "Implement KPI Tracking Mechanisms (Automation Rate, SLA, NPS)",
-    "assignee": "Program Leadership & PMO",
+    "assignee": "Mark",
     "start_date": "2026-02-16",
-    "due_date": "2026-02-28",
+    "due_date": "2026-07-31",
     "status": "todo",
     "dependencies": [
       6

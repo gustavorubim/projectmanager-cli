@@ -1,0 +1,545 @@
+{
+  "parameters": {
+    "iterations": 2000,
+    "cost_rate": null,
+    "deadline": null,
+    "milestone_deadline": null,
+    "milestone_label": null,
+    "shock_days": 0
+  },
+  "results": {
+    "iterations": 2000,
+    "generated_at": "2025-11-19T20:45:55.337692",
+    "project_start": "2025-11-19",
+    "finish_percentiles": {
+      "p10": "2027-01-29",
+      "p50": "2027-02-25",
+      "p90": "2027-03-25"
+    },
+    "duration_percentiles": {
+      "p10": 436.0,
+      "p50": 463.0,
+      "p90": 491.10000000000014
+    },
+    "effort_percentiles": {
+      "p10": 2326.0,
+      "p50": 2394.0,
+      "p90": 2460.0
+    },
+    "finish_distribution_stats": {
+      "mean_days": 463.597,
+      "std_days": 21.741747652845206,
+      "min_days": 392.0,
+      "max_days": 536.0
+    },
+    "probability_on_time": null,
+    "milestone_probability": null,
+    "milestone_label": null,
+    "risk_drivers": [
+      {
+        "task_id": 14,
+        "title": "Enablement and Training Sessions",
+        "correlation": 1.0,
+        "avg_duration": 63.9425
+      },
+      {
+        "task_id": 70,
+        "title": "Develop Performance & Usage Dashboards",
+        "correlation": 0.8908867431258606,
+        "avg_duration": 15.729
+      },
+      {
+        "task_id": 77,
+        "title": "Infra Ops Buddy Agent Design & Architecture",
+        "correlation": 0.8834069527506924,
+        "avg_duration": 12.7445
+      },
+      {
+        "task_id": 39,
+        "title": "Infra Ops Buddy Playbook Requirements Gathering",
+        "correlation": 0.8786611703317035,
+        "avg_duration": 14.968
+      },
+      {
+        "task_id": 9,
+        "title": "Infra Ops Buddy Playbook Development",
+        "correlation": 0.8724557507591292,
+        "avg_duration": 62.3445
+      },
+      {
+        "task_id": 27,
+        "title": "Develop SRE Workflows for Infra Ops Playbook",
+        "correlation": 0.8667388386091018,
+        "avg_duration": 14.929
+      },
+      {
+        "task_id": 28,
+        "title": "Implement On-Call API Hooks for Infra Ops Playbook",
+        "correlation": 0.8660289192169547,
+        "avg_duration": 14.983
+      },
+      {
+        "task_id": 40,
+        "title": "Infra Ops Buddy Data Prep & Agent Training",
+        "correlation": 0.8621890628191488,
+        "avg_duration": 14.9575
+      },
+      {
+        "task_id": 43,
+        "title": "Infra Ops Buddy Initial Monitoring & Iteration",
+        "correlation": 0.7569101355737441,
+        "avg_duration": 14.9845
+      },
+      {
+        "task_id": 42,
+        "title": "Infra Ops Buddy UAT & Pilot Deployment",
+        "correlation": 0.7552062674575859,
+        "avg_duration": 8.6585
+      },
+      {
+        "task_id": 41,
+        "title": "Infra Ops Buddy Unit & Integration Testing",
+        "correlation": 0.7537818010217052,
+        "avg_duration": 6.352
+      },
+      {
+        "task_id": 44,
+        "title": "Finance Quote-to-Cash Playbook Requirements Gathering",
+        "correlation": 0.749911838830229,
+        "avg_duration": 14.962
+      },
+      {
+        "task_id": 78,
+        "title": "Finance Quote-to-Cash Agent Design & Architecture",
+        "correlation": 0.744602666130355,
+        "avg_duration": 12.616
+      },
+      {
+        "task_id": 10,
+        "title": "Finance Quote-to-Cash Co-Pilot Development",
+        "correlation": 0.7418493440996166,
+        "avg_duration": 62.133
+      },
+      {
+        "task_id": 29,
+        "title": "Modernize ERP API for Finance Playbook",
+        "correlation": 0.7309426983738492,
+        "avg_duration": 14.995
+      },
+      {
+        "task_id": 45,
+        "title": "Finance Quote-to-Cash Data Prep & Agent Training",
+        "correlation": 0.7252587368023597,
+        "avg_duration": 15.0265
+      },
+      {
+        "task_id": 65,
+        "title": "Develop Training Modules for Infra Ops Function",
+        "correlation": 0.6935908599528585,
+        "avg_duration": 30.9935
+      },
+      {
+        "task_id": 15,
+        "title": "Adoption Dashboards Development",
+        "correlation": 0.6471398029409897,
+        "avg_duration": 64.352
+      },
+      {
+        "task_id": 48,
+        "title": "Finance Quote-to-Cash Initial Monitoring & Iteration",
+        "correlation": 0.5954770264853831,
+        "avg_duration": 14.978
+      },
+      {
+        "task_id": 46,
+        "title": "Finance Quote-to-Cash Unit & Integration Testing",
+        "correlation": 0.5946864478703218,
+        "avg_duration": 6.329
+      },
+      {
+        "task_id": 50,
+        "title": "HR Workflow Automation Agent Design & Architecture",
+        "correlation": 0.5886421508026499,
+        "avg_duration": 13.964
+      },
+      {
+        "task_id": 52,
+        "title": "HR Workflow Automation Unit & Integration Testing",
+        "correlation": 0.5706893171316253,
+        "avg_duration": 6.3485
+      },
+      {
+        "task_id": 54,
+        "title": "Marketing Ops Co-Pilot Playbook Requirements Gathering",
+        "correlation": 0.5682025979915835,
+        "avg_duration": 15.03
+      },
+      {
+        "task_id": 33,
+        "title": "Marketing Ops Co-Pilot Playbook Development",
+        "correlation": 0.5603566262338003,
+        "avg_duration": 63.915
+      },
+      {
+        "task_id": 13,
+        "title": "Finance & Marketing Playbooks Deployment",
+        "correlation": 0.4727901277082672,
+        "avg_duration": 63.8705
+      },
+      {
+        "task_id": 32,
+        "title": "HR Workflow Automation Playbook Development",
+        "correlation": 0.17921546078021572,
+        "avg_duration": 64.0985
+      },
+      {
+        "task_id": 49,
+        "title": "HR Workflow Automation Playbook Requirements Gathering",
+        "correlation": 0.17565002486112805,
+        "avg_duration": 14.9465
+      },
+      {
+        "task_id": 47,
+        "title": "Finance Quote-to-Cash UAT & Pilot Deployment",
+        "correlation": 0.17131943541867667,
+        "avg_duration": 8.676
+      },
+      {
+        "task_id": 4,
+        "title": "Agent Fabric MVP Development",
+        "correlation": 0.14789917478338532,
+        "avg_duration": 62.3555
+      },
+      {
+        "task_id": 5,
+        "title": "IAM Integration",
+        "correlation": 0.14730047949994177,
+        "avg_duration": 62.9135
+      },
+      {
+        "task_id": 66,
+        "title": "Develop Training Modules for Finance Function",
+        "correlation": 0.12504197495981137,
+        "avg_duration": 31.0115
+      },
+      {
+        "task_id": 58,
+        "title": "Marketing Ops Co-Pilot UAT & Pilot Deployment",
+        "correlation": 0.12189899075596539,
+        "avg_duration": 8.6715
+      },
+      {
+        "task_id": 55,
+        "title": "Marketing Ops Co-Pilot Agent Design & Architecture",
+        "correlation": 0.1214560181916555,
+        "avg_duration": 14.0225
+      },
+      {
+        "task_id": 7,
+        "title": "Initial Connectors Development",
+        "correlation": 0.1208334835525956,
+        "avg_duration": 62.4855
+      },
+      {
+        "task_id": 59,
+        "title": "CRM Connector Development",
+        "correlation": 0.12071663334753636,
+        "avg_duration": 15.0185
+      },
+      {
+        "task_id": 60,
+        "title": "Code Repository Connector Development",
+        "correlation": 0.12067252718401185,
+        "avg_duration": 14.989
+      },
+      {
+        "task_id": 53,
+        "title": "HR Workflow Automation UAT & Pilot Deployment",
+        "correlation": 0.12054511616655762,
+        "avg_duration": 8.6595
+      },
+      {
+        "task_id": 61,
+        "title": "Knowledge Base Connector Development",
+        "correlation": 0.11955860437438348,
+        "avg_duration": 15.047
+      },
+      {
+        "task_id": 57,
+        "title": "Marketing Ops Co-Pilot Unit & Integration Testing",
+        "correlation": 0.11792296405540315,
+        "avg_duration": 6.34
+      },
+      {
+        "task_id": 51,
+        "title": "HR Workflow Automation Data Prep & Agent Training",
+        "correlation": 0.11772078314653237,
+        "avg_duration": 14.9555
+      },
+      {
+        "task_id": 56,
+        "title": "Marketing Ops Co-Pilot Data Prep & Agent Training",
+        "correlation": 0.11493176163364012,
+        "avg_duration": 14.972
+      },
+      {
+        "task_id": 71,
+        "title": "Regular KPI Reporting & Review Cycles",
+        "correlation": 0.11135617833612478,
+        "avg_duration": 8.649
+      },
+      {
+        "task_id": 79,
+        "title": "Secure Data Ingestion Pipeline Setup",
+        "correlation": 0.11111656736336135,
+        "avg_duration": 12.6575
+      },
+      {
+        "task_id": 21,
+        "title": "Steady-State Operations Handoff",
+        "correlation": 0.10698348155825595,
+        "avg_duration": 63.9625
+      },
+      {
+        "task_id": 18,
+        "title": "Self-Service Workflow Builder GA",
+        "correlation": 0.10695313034710084,
+        "avg_duration": 63.741
+      },
+      {
+        "task_id": 22,
+        "title": "Develop Agent Fabric Orchestration Layer",
+        "correlation": 0.10538491307885439,
+        "avg_duration": 45.341
+      },
+      {
+        "task_id": 19,
+        "title": "Enterprise Rollout",
+        "correlation": 0.09787275207262502,
+        "avg_duration": 63.7665
+      },
+      {
+        "task_id": 6,
+        "title": "Observability Baseline Setup",
+        "correlation": 0.09186697394725304,
+        "avg_duration": 62.52
+      },
+      {
+        "task_id": 81,
+        "title": "Define Agent Guardrail Policies",
+        "correlation": 0.08698361219363099,
+        "avg_duration": 12.7205
+      },
+      {
+        "task_id": 84,
+        "title": "Implement KPI Tracking Mechanisms (Automation Rate, SLA, NPS)",
+        "correlation": 0.08658501947523133,
+        "avg_duration": 12.6395
+      },
+      {
+        "task_id": 17,
+        "title": "Governance Sign-Offs",
+        "correlation": 0.08388666863105036,
+        "avg_duration": 64.0985
+      },
+      {
+        "task_id": 23,
+        "title": "Implement Identity-Aware Policy Engine",
+        "correlation": 0.08329251299991997,
+        "avg_duration": 62.7405
+      },
+      {
+        "task_id": 68,
+        "title": "Define Observability Requirements & KPIs",
+        "correlation": 0.08097205355776792,
+        "avg_duration": 15.052
+      },
+      {
+        "task_id": 63,
+        "title": "Develop Policy Enforcement Mechanisms",
+        "correlation": 0.07424125427874576,
+        "avg_duration": 15.016
+      },
+      {
+        "task_id": 1,
+        "title": "Charter Approval and Funding Secured",
+        "correlation": 0.07301669317244962,
+        "avg_duration": 7.3235
+      },
+      {
+        "task_id": 20,
+        "title": "Performance Tuning",
+        "correlation": 0.07155188739109872,
+        "avg_duration": 64.097
+      },
+      {
+        "task_id": 2,
+        "title": "Team Staffing and Onboarding",
+        "correlation": 0.06502677635340942,
+        "avg_duration": 7.3695
+      },
+      {
+        "task_id": 83,
+        "title": "Establish Knowledge Transfer & Enablement Loops",
+        "correlation": 0.06375929868230665,
+        "avg_duration": 28.461
+      },
+      {
+        "task_id": 67,
+        "title": "Identify and Onboard Adoption Champion Network",
+        "correlation": 0.06111484591115913,
+        "avg_duration": 62.497
+      },
+      {
+        "task_id": 3,
+        "title": "GPU Capacity Reservation",
+        "correlation": 0.047654192686219815,
+        "avg_duration": 7.323
+      },
+      {
+        "task_id": 82,
+        "title": "Schedule and Conduct Adoption Office Hours",
+        "correlation": 0.044994604613560314,
+        "avg_duration": 28.6505
+      },
+      {
+        "task_id": 35,
+        "title": "Support L1 Triage Data Prep & Agent Training",
+        "correlation": -0.03734027210175102,
+        "avg_duration": 15.0365
+      },
+      {
+        "task_id": 76,
+        "title": "Support L1 Triage Agent Design & Architecture",
+        "correlation": -0.03581199015949271,
+        "avg_duration": 12.625
+      },
+      {
+        "task_id": 25,
+        "title": "Develop ITSM Connector for Support Playbook",
+        "correlation": -0.03403657713494231,
+        "avg_duration": 14.9995
+      },
+      {
+        "task_id": 34,
+        "title": "Support L1 Triage Playbook Requirements Gathering",
+        "correlation": -0.030700829712030198,
+        "avg_duration": 15.0475
+      },
+      {
+        "task_id": 8,
+        "title": "Support L1 Triage Playbook Development",
+        "correlation": -0.030281116740954843,
+        "avg_duration": 61.6945
+      },
+      {
+        "task_id": 64,
+        "title": "Develop Training Modules for Support Function",
+        "correlation": -0.02712239190239843,
+        "avg_duration": 30.8275
+      },
+      {
+        "task_id": 73,
+        "title": "Bi-weekly Steering Committee Meetings",
+        "correlation": 0.02468740315399611,
+        "avg_duration": 7.311
+      },
+      {
+        "task_id": 11,
+        "title": "Red-Team Exercises",
+        "correlation": 0.02391079789835021,
+        "avg_duration": 61.948
+      },
+      {
+        "task_id": 26,
+        "title": "Clean Up Knowledge Base for Support Playbook",
+        "correlation": -0.023538113859749257,
+        "avg_duration": 14.989
+      },
+      {
+        "task_id": 30,
+        "title": "Conduct Legal/Privacy Review for Model Risk Framework",
+        "correlation": 0.018955450728638187,
+        "avg_duration": 44.6735
+      },
+      {
+        "task_id": 37,
+        "title": "Support L1 Triage UAT & Pilot Deployment",
+        "correlation": 0.01884785282828852,
+        "avg_duration": 8.669
+      },
+      {
+        "task_id": 69,
+        "title": "Integrate Agent-Specific Monitoring Tools",
+        "correlation": -0.018110559374261547,
+        "avg_duration": 15.0025
+      },
+      {
+        "task_id": 62,
+        "title": "Develop Model Risk Framework",
+        "correlation": 0.016254846747960516,
+        "avg_duration": 30.1605
+      },
+      {
+        "task_id": 80,
+        "title": "Define Red-Team Audit Scope and Criteria",
+        "correlation": 0.0161050202301707,
+        "avg_duration": 12.6035
+      },
+      {
+        "task_id": 24,
+        "title": "Setup Prompt Evaluation Lab",
+        "correlation": -0.013117936344543484,
+        "avg_duration": 62.6385
+      },
+      {
+        "task_id": 31,
+        "title": "Develop SOC2-Ready Logging System",
+        "correlation": 0.008549243400594451,
+        "avg_duration": 44.394
+      },
+      {
+        "task_id": 12,
+        "title": "SOC2 Logging Implementation",
+        "correlation": -0.008482522647148416,
+        "avg_duration": 61.892
+      },
+      {
+        "task_id": 74,
+        "title": "Monthly All-Hands Demo & KPI Review",
+        "correlation": 0.007459579687617132,
+        "avg_duration": 7.2905
+      },
+      {
+        "task_id": 38,
+        "title": "Support L1 Triage Initial Monitoring & Iteration",
+        "correlation": -0.007163348875349092,
+        "avg_duration": 14.9875
+      },
+      {
+        "task_id": 16,
+        "title": "Compliance Agent & Audit Reporting",
+        "correlation": 0.007096669366503827,
+        "avg_duration": 63.9325
+      },
+      {
+        "task_id": 75,
+        "title": "Ongoing Risk Monitoring and Mitigation Planning",
+        "correlation": -0.004912380364876485,
+        "avg_duration": 7.344
+      },
+      {
+        "task_id": 72,
+        "title": "Weekly PMO Updates",
+        "correlation": 0.0018686412721051185,
+        "avg_duration": 7.319
+      },
+      {
+        "task_id": 36,
+        "title": "Support L1 Triage Unit & Integration Testing",
+        "correlation": 0.0017135303886998317,
+        "avg_duration": 6.3545
+      }
+    ]
+  }
+}

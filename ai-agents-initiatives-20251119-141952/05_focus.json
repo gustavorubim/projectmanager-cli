@@ -1,5 +1,5 @@
 {
-  "generated_at": "2025-11-19T15:01:46.653673",
+  "generated_at": "2025-11-19T20:54:41.913590",
   "horizon_days": 14,
   "max_items": 20,
   "items": [
@@ -7,8 +7,8 @@
       "task_id": 1,
       "title": "Charter Approval and Funding Secured",
       "due_date": "2025-11-26",
-      "status": "todo",
-      "assignee": "Program Leadership & PMO",
+      "status": "done",
+      "assignee": "Mark",
       "days_remaining": 7,
       "reason": "due_soon"
     },
@@ -17,7 +17,7 @@
       "title": "Weekly PMO Updates",
       "due_date": "2025-11-26",
       "status": "todo",
-      "assignee": "Program Leadership & PMO",
+      "assignee": "Mark",
       "days_remaining": 7,
       "reason": "due_soon"
     },
@@ -25,8 +25,8 @@
       "task_id": 2,
       "title": "Team Staffing and Onboarding",
       "due_date": "2025-12-03",
-      "status": "todo",
-      "assignee": "Program Leadership & PMO",
+      "status": "done",
+      "assignee": "Mark",
       "days_remaining": 14,
       "reason": "due_soon"
     },
@@ -34,7 +34,7 @@
       "task_id": 3,
       "title": "GPU Capacity Reservation",
       "due_date": "2025-12-03",
-      "status": "todo",
+      "status": "done",
       "assignee": "AI Platform Engineering",
       "days_remaining": 14,
       "reason": "due_soon"
@@ -44,7 +44,7 @@
       "title": "Bi-weekly Steering Committee Meetings",
       "due_date": "2025-12-03",
       "status": "todo",
-      "assignee": "Program Leadership & PMO",
+      "assignee": "Mark",
       "days_remaining": 14,
       "reason": "due_soon"
     },
@@ -53,7 +53,7 @@
       "title": "Ongoing Risk Monitoring and Mitigation Planning",
       "due_date": "2025-12-03",
       "status": "todo",
-      "assignee": "Program Leadership & PMO",
+      "assignee": "Mark",
       "days_remaining": 14,
       "reason": "due_soon"
     }
