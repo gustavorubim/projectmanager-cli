@@ -43,3 +43,6 @@ credentials/
 demo-project/
 test-project/
 _archive/
+
+# Local agent settings
+.claude/settings.local.json
